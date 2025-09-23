@@ -43,7 +43,6 @@ public class ProductController {
         return new ProductDto(p);
     }
 
-    // 요청/응답 바디
     public record ProductWriteReqBody(
             @NotBlank @Size(min=2, max=50) String name,
             @Min(0) int price,

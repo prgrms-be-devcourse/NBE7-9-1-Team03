@@ -2,6 +2,7 @@ package com.coffee.product.dto;
 
 import com.coffee.product.entity.Product;
 
+
 public record ProductDto(
         Long id,
         String name,
