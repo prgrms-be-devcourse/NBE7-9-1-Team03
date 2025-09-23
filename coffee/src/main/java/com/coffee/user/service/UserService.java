@@ -1,5 +1,6 @@
 package com.coffee.user.service;
 
+import com.coffee.global.exception.ServiceException;
 import com.coffee.user.entity.User;
 import com.coffee.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,4 +27,13 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User join(String email, String username, String address, Long postalCode) {
+        User user = new User(email, username, address, postalCode);
+
+        findByEmail(email).ifPresent(u -> {
+            throw new ServiceException("401", "이미 사용중인 이메일입니다.");
+        });
+
+        return userRepository.save(user);
+    }
 }

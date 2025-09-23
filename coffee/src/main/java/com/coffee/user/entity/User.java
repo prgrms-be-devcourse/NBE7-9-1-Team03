@@ -16,7 +16,14 @@ public class User extends BaseEntity {
 
     private String username;    // 사용자 실명
     private String address;     // 사용자 주소
-    private Integer postalCode;  // 사용자 우편번호
+    private Long postalCode;  // 사용자 우편번호
+
+    public User(String email, String username, String address, Long postalCode) {
+        this.email = email;
+        this.username = username;
+        this.address = address;
+        this.postalCode = postalCode;
+    }
 }
 
 /*

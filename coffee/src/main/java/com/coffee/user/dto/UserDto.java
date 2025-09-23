@@ -7,7 +7,7 @@ public record UserDto(
         String email,
         String username,
         String address,
-        Integer postalCode
+        Long postalCode
 ) {
     public UserDto(User user){
         this(
