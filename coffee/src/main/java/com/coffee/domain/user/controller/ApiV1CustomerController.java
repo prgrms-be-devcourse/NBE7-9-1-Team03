@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
-@Tag(name = "ApiV1UserController", description = "유저 API")
+@RequestMapping("/api/v1/customer")
+@Tag(name = "ApiV1CustomerController", description = "고객정보 API")
 public class ApiV1CustomerController {
 
     private final CustomerService customerService;
@@ -58,7 +58,7 @@ public class ApiV1CustomerController {
             CustomerDto customerDto
     ) {}
     @PostMapping("/join")
-    @Operation(summary = "유저 정보 저장")
+    @Operation(summary = "고객정보 저장")
     public RsData<CustomerDto> join(
             @RequestBody @Valid JoinReqBody reqBody
     ){
@@ -68,7 +68,7 @@ public class ApiV1CustomerController {
 
         return new RsData(
                 "201",
-                "유저 정보가 저장되었습니다.",
+                "고객정보가 저장되었습니다.",
                 new JoinResBody(
                         new CustomerDto(customer)
                 )
