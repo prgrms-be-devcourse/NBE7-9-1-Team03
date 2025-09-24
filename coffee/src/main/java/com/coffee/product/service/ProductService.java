@@ -42,8 +42,4 @@ public class ProductService {
         productRepository.delete(p);
     }
 
-    public long count() {
-        return productRepository.count();
-    }
-
 }
