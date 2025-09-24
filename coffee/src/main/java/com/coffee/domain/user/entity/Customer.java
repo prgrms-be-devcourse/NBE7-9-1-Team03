@@ -16,6 +16,9 @@ public class Customer extends BaseEntity {
 
     private String password;    // 비밀번호
 
+    @Column(unique=true)
+    private String apiKey;
+
     private String username;    // 이름
     private String address;     // 주소
     private Integer postalCode;  // 우편번호

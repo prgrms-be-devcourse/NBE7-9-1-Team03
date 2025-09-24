@@ -46,6 +46,9 @@ public class CustomerService {
         }
     }
 
+    public Optional<Customer> findByApiKey(String apiKey) {
+        return customerRepository.findByApiKey(apiKey);
+    }
 }
 
 /*
