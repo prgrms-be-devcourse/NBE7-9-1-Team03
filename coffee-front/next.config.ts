@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    async rewrites() {
+        return [
+            {
+                source: "/customer/:path*",
+                destination: "http://localhost:8080/customer/:path*",
+            },
+        ];
+    },
 };
 
 export default nextConfig;
+
