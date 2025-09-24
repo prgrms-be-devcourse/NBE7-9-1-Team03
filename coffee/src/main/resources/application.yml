@@ -24,10 +24,6 @@ spring:
       filter:
         enabled: true
 
-#spring:
-#  profiles:
-#   active: dev  # ? ??? ?? ??? 'prod'? ???? ?
-
 springdoc:
   default-produces-media-type: application/json
 
@@ -43,5 +39,3 @@ custom:
   jwt:
     expireSeconds: "#{1000L * 60 * 60 * 24 * 365}"
     secretPattern: abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890
-
-
