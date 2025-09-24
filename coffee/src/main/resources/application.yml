@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
   thymeleaf:
     cache: false
     prefix: file:src/main/resources/templates/
@@ -23,6 +23,9 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  batch:
+    job:
+      enabled: false
 
 #spring:
 #  profiles:
@@ -36,6 +39,7 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
+    com.coffee.domain.order.service.OrderBatchService: DEBUG
 
     com.rest1: DEBUG
 
