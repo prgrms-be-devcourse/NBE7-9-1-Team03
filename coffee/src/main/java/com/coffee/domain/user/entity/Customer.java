@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @NoArgsConstructor
 @Getter
@@ -29,6 +31,7 @@ public class Customer extends BaseEntity {
         this.username = username;
         this.address = address;
         this.postalCode = postalCode;
+        this.apiKey = UUID.randomUUID().toString();     // JWT or 세션/시큐리티 미도입으로 UUID사용
     }
 
     public void updateInfo(String username, String password, String address, Integer postalCode) {

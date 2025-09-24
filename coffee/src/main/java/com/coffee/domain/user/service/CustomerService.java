@@ -15,6 +15,10 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+
+    public long count() {
+        return customerRepository.count();}
+
     public Optional<Customer> findByEmail(String email) {
         return customerRepository.findByEmail(email);
     }
@@ -49,6 +53,7 @@ public class CustomerService {
     public Optional<Customer> findByApiKey(String apiKey) {
         return customerRepository.findByApiKey(apiKey);
     }
+
 }
 
 /*

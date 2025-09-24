@@ -1,10 +1,11 @@
 package com.coffee.domain.user.controller;
 
 import com.coffee.domain.user.dto.CustomerDto;
-import com.coffee.domain.user.entity.Customer;
 import com.coffee.domain.user.dto.CustomerJoinRequest;
+import com.coffee.domain.user.entity.Customer;
 import com.coffee.domain.user.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
+import com.coffee.global.rq.Rq;
 import com.coffee.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class ApiV1CustomerController {
 
     private final CustomerService customerService;
+    private final Rq rq;
 
 
     @GetMapping("/id/{id}")
@@ -33,17 +35,6 @@ public class ApiV1CustomerController {
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         return new CustomerDto(customer);
     }
-
-    @GetMapping("/me")
-    @Transactional(readOnly = true)
-    @Operation(summary = "고객 정보 조회-이메일")
-    public CustomerDto getUserByEmail(@PathVariable String email) {
-        Customer customer = customerService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        return new CustomerDto(customer);
-    }
-
-
 
     record JoinResBody(
             CustomerDto customerDto
@@ -81,7 +72,8 @@ public class ApiV1CustomerController {
     ) {
     }
     record LoginResBody(
-            CustomerDto customerDto
+            CustomerDto customerDto,
+            String apiKey
     ) {
     }
     @PostMapping("/login")
@@ -94,12 +86,14 @@ public class ApiV1CustomerController {
         );
 
         customerService.checkPassword(reqBody.password, customer.getPassword());
+        rq.setCookie("apiKey", customer.getApiKey());
 
         return new RsData(
                 "200",
                 "로그인 성공",
                 new LoginResBody(
-                        new CustomerDto(customer)
+                        new CustomerDto(customer),
+                        customer.getApiKey()
                 )
         );
     }
@@ -107,9 +101,30 @@ public class ApiV1CustomerController {
     @DeleteMapping("/logout")
     @Operation(summary = "로그아웃")
     public RsData<Void> logout() {
+
+        rq.deleteCookie("apiKey");
+
         return new RsData<>(
                 "200",
                 "로그아웃 되었습니다."
         );
+    }
+
+    @GetMapping("/me")
+    @Transactional(readOnly = true)
+    @Operation(summary = "고객 정보 조회-이메일")
+    public CustomerDto getUserByEmail(@PathVariable String email) {
+        Customer customer = customerService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return new CustomerDto(customer);
+    }
+
+
+    @PutMapping("/me")
+    @Operation(summary = "회원 개인정보 변경")
+    public CustomerDto modifyMe(@PathVariable String email) {
+        Customer customer = customerService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return new CustomerDto(customer);
     }
 }
