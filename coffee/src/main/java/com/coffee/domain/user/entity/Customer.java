@@ -34,9 +34,8 @@ public class Customer extends BaseEntity {
         this.apiKey = UUID.randomUUID().toString();     // JWT or 세션/시큐리티 미도입으로 UUID사용
     }
 
-    public void updateInfo(String username, String password, String address, Integer postalCode) {
+    public void updateInfo(String username, String address, Integer postalCode) {
         this.username = username;
-        this.password = password;
         this.address = address;
         this.postalCode = postalCode;
     }

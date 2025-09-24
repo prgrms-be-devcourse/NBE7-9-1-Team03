@@ -25,7 +25,7 @@ public class Rq {
 
         if (!headerAuthorization.isBlank()) {
             if (!headerAuthorization.startsWith("Bearer "))
-                throw new ServiceException("401-2", "Authorization 헤더가 Bearer 형식이 아닙니다.");
+                throw new ServiceException("401", "Authorization 헤더가 Bearer 형식이 아닙니다.");
 
             String[] headerAuthorizationBits = headerAuthorization.split(" ", 3);
             apiKey = headerAuthorizationBits[1];
@@ -34,10 +34,10 @@ public class Rq {
         }
 
         if (apiKey.isBlank())
-            throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+            throw new ServiceException("401", "로그인 후 이용해주세요.");
 
         Customer actor = customerService.findByApiKey(apiKey)
-                .orElseThrow(() -> new ServiceException("401-3", "API 키가 올바르지 않습니다."));
+                .orElseThrow(() -> new ServiceException("401", "API 키가 올바르지 않습니다."));
 
         return actor;
     }

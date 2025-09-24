@@ -1,7 +1,8 @@
 package com.coffee.domain.user.controller;
 
+import com.coffee.domain.user.dto.CustomerCommonResBody;
 import com.coffee.domain.user.dto.CustomerDto;
-import com.coffee.domain.user.dto.CustomerJoinRequest;
+import com.coffee.domain.user.dto.CustomerCommonReqBody;
 import com.coffee.domain.user.entity.Customer;
 import com.coffee.domain.user.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
@@ -27,32 +28,30 @@ public class ApiV1CustomerController {
     private final Rq rq;
 
 
-    @GetMapping("/id/{id}")
+    // 이메일로 바꾸기
+    @GetMapping("/email/{email}")
     @Transactional(readOnly = true)
-    @Operation(summary = "고객 정보 조회-id")
-    public CustomerDto getUserById(@PathVariable Long id) {
-        Customer customer = customerService.findById(id)
+    @Operation(summary = "고객 정보 조회-email")
+    public CustomerDto getUserById(@PathVariable String email) {
+        Customer customer = customerService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
         return new CustomerDto(customer);
     }
 
-    record JoinResBody(
-            CustomerDto customerDto
-    ) {
-    }
     @PostMapping("/join")
     @Operation(summary = "회원가입")
     public RsData<CustomerDto> join(
-            @RequestBody @Valid CustomerJoinRequest reqBody
+            @RequestBody @Valid CustomerCommonReqBody reqBody
     ) {
 
         Customer customer = customerService
-                .join(reqBody.email(), reqBody.password(), reqBody.username(), reqBody.address(), Integer.parseInt(reqBody.postalCode()));
+                .join(reqBody.email(), reqBody.password(), reqBody.username(),
+                        reqBody.address(), Integer.parseInt(reqBody.postalCode()));
 
         return new RsData(
                 "201",
                 "고객정보가 저장되었습니다.",
-                new JoinResBody(
+                new CustomerCommonResBody(
                         new CustomerDto(customer)
                 )
         );
@@ -112,19 +111,40 @@ public class ApiV1CustomerController {
 
     @GetMapping("/me")
     @Transactional(readOnly = true)
-    @Operation(summary = "고객 정보 조회-이메일")
-    public CustomerDto getUserByEmail(@PathVariable String email) {
-        Customer customer = customerService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        return new CustomerDto(customer);
+    @Operation(summary = "내 정보 조회")
+    public RsData<CustomerDto> getUserByEmail(@PathVariable String email) {
+        Customer customer = customerService.findByEmail(rq.getActor().getEmail()).get();
+
+        return new RsData(
+                "200",
+                "내 정보 조회 성공",
+                new CustomerCommonResBody(
+                        new CustomerDto(customer)
+                )
+        );
     }
 
 
     @PutMapping("/me")
     @Operation(summary = "회원 개인정보 변경")
-    public CustomerDto modifyMe(@PathVariable String email) {
-        Customer customer = customerService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        return new CustomerDto(customer);
+    public RsData<Void> modifyMe(
+            @RequestBody @Valid CustomerCommonReqBody reqBody
+    ) {
+        Customer actor = customerService.findByEmail(rq.getActor().getEmail()).get();
+
+        // 로그인 중인 이메일 일치 체크
+        if(!actor.getEmail().equals(rq.getActor().getEmail())) {
+            throw new ServiceException("401", "로그인한 이메일과 다릅니다");
+        }
+
+        // 로그인 중인 비밀번호와 일치 체크
+        customerService.checkPassword(actor.getPassword(), reqBody.password());
+
+        customerService.modifyMe(actor, reqBody.username(), reqBody.address(), Integer.parseInt(reqBody.postalCode()));
+
+        return new RsData(
+                "200",
+                "내 정보 수정 성공"
+        );
     }
 }
