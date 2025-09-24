@@ -12,21 +12,25 @@ import lombok.NoArgsConstructor;
 public class Customer extends BaseEntity {
 
     @Column(unique=true)
-    private String email;       // 사용자 이메일
+    private String email;       // 사용자 이메일(아이디로 사용)
 
-    private String username;    // 사용자 실명
-    private String address;     // 사용자 주소
-    private Integer postalCode;  // 사용자 우편번호
+    private String password;    // 비밀번호
 
-    public Customer(String email, String username, String address, Integer postalCode) {
+    private String username;    // 이름
+    private String address;     // 주소
+    private Integer postalCode;  // 우편번호
+
+    public Customer(String email, String password, String username, String address, Integer postalCode) {
         this.email = email;
+        this.password = password;
         this.username = username;
         this.address = address;
         this.postalCode = postalCode;
     }
 
-    public void updateInfo(String username, String address, Integer postalCode) {
+    public void updateInfo(String username, String password, String address, Integer postalCode) {
         this.username = username;
+        this.password = password;
         this.address = address;
         this.postalCode = postalCode;
     }

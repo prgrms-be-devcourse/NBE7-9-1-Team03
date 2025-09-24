@@ -2,9 +2,9 @@ package com.coffee.domain.user.service;
 
 import com.coffee.domain.user.entity.Customer;
 import com.coffee.domain.user.repository.CustomerRepository;
+import com.coffee.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +27,30 @@ public class CustomerService {
         return customerRepository.findAll();
     }
 
-    // 이메일 기준 이미 고객이 있으면 새로운 입력기준 update 후 기존 고객정보 반환,
-    // 없다면 새로 고객정보 저장
-    @Transactional
-    public Customer join(String email, String username, String address, Integer postalCode) {
+    public Customer join(String email, String password, String username, String address, Integer postalCode) {
+        Customer customer = new Customer(email, password, username, address, postalCode);
+
+        findByEmail(email).ifPresent(customer1 -> {
+            throw new ServiceException("401", "이미 사용중인 이메일입니다");
+        });
+
+        return customerRepository.save(customer);
+    }
+
+
+
+
+    public void checkPassword(String inputPass, String rawPass){
+        if(!inputPass.equals(rawPass)){
+            throw new ServiceException("401", "비밀번호가 일치하지 않습니다");
+        }
+    }
+
+}
+
+/*
+@Transactional
+    public Customer join(String email, String password, String username, String address, Integer postalCode) {
         return customerRepository.findByEmail(email)
                 .map(existing -> {
                     existing.updateInfo(username, address, postalCode); // 더티체킹으로 update sql
@@ -41,4 +61,4 @@ public class CustomerService {
                     return customerRepository.save(newCustomer);
                 });
     }
-}
+ */
