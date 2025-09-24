@@ -18,7 +18,7 @@ bin/
 !**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
-.idea
+/.idea
 *.iws
 *.iml
 *.ipr
@@ -37,5 +37,5 @@ out/
 .vscode/
 
 ### custom ###
-db_dev.mv.db
-db_dev.trace.db
+/db_dev.mv.db
+/db_dev.trace.db
