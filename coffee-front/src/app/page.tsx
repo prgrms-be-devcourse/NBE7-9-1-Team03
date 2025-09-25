@@ -71,7 +71,7 @@ export default function Home() {
   const submitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email = emailRef.current?.value?.trim() || "";
+    const customerEmail = emailRef.current?.value?.trim() || "";
     // const address = addressRef.current?.value?.trim() || "";  
     // const zipcode = zipcodeRef.current?.value?.trim() || "";
 
@@ -79,7 +79,7 @@ export default function Home() {
       alert("주문서가 비어있습니다. 상품을 추가해주세요.");
       return;
     }
-    if (email.length === 0) {
+    if (customerEmail.length === 0) {
       alert("이메일을 입력해주세요.");
       emailRef.current?.focus();
       return;
@@ -95,15 +95,11 @@ export default function Home() {
     //   return;
     // }
 
-    const body: OrderRequest = {
-      email,
-      // address,
-      // zipcode,
-      items: cart.map((c) => ({
-        productId: c.productId,
-        quantity: c.quantity,
-      })),
-    };
+    const body: OrderRequest = cart.map(c => ({
+      customerEmail: customerEmail,
+      productId: c.productId,
+      quantity: c.quantity,
+    }));
 
     try {
       const data = await fetchApi(`/orders`, {
