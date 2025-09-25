@@ -1,4 +1,3 @@
-// next.config.ts
 import type { NextConfig } from 'next'
 
 const BACKEND = process.env.BACKEND_ORIGIN ?? 'http://localhost:8080'

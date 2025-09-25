@@ -78,7 +78,7 @@ public class ApiV1CustomerController {
     @PostMapping("/login")
     @Operation(summary = "로그인")
     public RsData<CustomerDto> login(
-            @RequestBody @Valid ApiV1CustomerController.QuitReqBody reqBody
+            @RequestBody @Valid LoginReqBody reqBody
     ) {
         Customer customer = customerService.findByEmail(reqBody.email).orElseThrow(
                 () -> new ServiceException("401", "존재하지 않는 아이디 입니다.")
