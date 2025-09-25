@@ -46,7 +46,8 @@ public class ProductController {
     public record ProductWriteReqBody(
             @NotBlank @Size(min=2, max=50) String name,
             @Min(0) int price,
-            @Min(0) int stock
+            @Min(0) int stock,
+            @NotBlank String imageUrl
     ) {}
 
     public record ProductWriteResBody(ProductDto productDto) {}
@@ -56,7 +57,7 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 생성")
     public RsData<ProductWriteResBody> createItem(@RequestBody @Valid ProductWriteReqBody req) {
-        Product p = productService.create(req.name(), req.price(), req.stock());
+        Product p = productService.create(req.name(), req.price(), req.stock(), req.imageUrl());
         return new RsData<>(
                 "201-1",
                 "%d번 상품이 생성되었습니다.".formatted(p.getId()),
@@ -68,7 +69,8 @@ public class ProductController {
     public record ProductModifyReqBody(
             @NotBlank @Size(min=2, max=50) String name,
             @Min(0) int price,
-            @Min(0) int stock
+            @Min(0) int stock,
+            @NotBlank String imageUrl
     ) {}
 
     // 4) 수정
@@ -77,7 +79,7 @@ public class ProductController {
     @Operation(summary = "상품 수정")
     public RsData<Void> modifyItem(@PathVariable Long id, @RequestBody @Valid ProductModifyReqBody req) {
         Product p = productService.findById(id).get();
-        productService.modify(p, req.name(), req.price(), req.stock());
+        productService.modify(p, req.name(), req.price(), req.stock(), req.imageUrl());
         return new RsData<>("200-1", "%d번 상품이 수정되었습니다.".formatted(id));
     }
 
