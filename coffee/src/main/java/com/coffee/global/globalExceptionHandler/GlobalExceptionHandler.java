@@ -3,12 +3,14 @@ package com.coffee.global.globalExceptionHandler;
 
 import com.coffee.global.exception.ServiceException;
 import com.coffee.global.rsData.RsData;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -19,6 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public RsData<Void> handleException(NoSuchElementException e){
         return new RsData<Void>(
                 "404-1",
@@ -28,6 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public RsData<Void> handleException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult()
                 .getAllErrors()

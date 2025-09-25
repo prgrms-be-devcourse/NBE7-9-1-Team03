@@ -1,8 +1,12 @@
 package com.coffee.domain.order.controller;
 
+import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.repository.CustomerRepository;
 import com.coffee.domain.order.entity.Order;
 import com.coffee.domain.order.repository.OrderRepository;
 import com.coffee.domain.order.service.OrderBatchService;
+import com.coffee.domain.product.entity.Product;
+import com.coffee.domain.product.repository.ProductRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class BatchControllerTest {
 
+
     @Autowired
     private WebApplicationContext webApplicationContext;
 
@@ -41,11 +46,23 @@ class BatchControllerTest {
     @Autowired
     private OrderBatchService orderBatchService;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
+    private ProductRepository productRepository;
+
     private MockMvc mvc;
     private List<Long> createdOrderIds = new ArrayList<>();
 
+    // 테스트에서 사용할 고객 및 상품 데이터 목록
+    private List<Customer> testCustomers = new ArrayList<>();
+    private List<Product> testProducts = new ArrayList<>();
+
     @BeforeEach
     void setUp() {
+        createTestCustomersForBatch();
+        createTestProductsForBatch();
+
         mvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         createdOrderIds.clear();
         createTestOrdersForBatch();
@@ -60,22 +77,58 @@ class BatchControllerTest {
             }
         });
         createdOrderIds.clear();
-        
+
         // 배치 테스트 관련 이메일로 생성된 주문들 모두 삭제
         orderRepository.findAll().stream()
-            .filter(order -> order.getCustomerEmail().contains("batch") || 
-                           order.getCustomerEmail().contains("manual"))
-            .forEach(order -> orderRepository.deleteById(order.getOrderId()));
+                .filter(order -> order.getCustomerEmail().contains("batch") ||
+                        order.getCustomerEmail().contains("manual"))
+                .forEach(order -> orderRepository.deleteById(order.getOrderId()));
+
+        orderRepository.deleteAll(); // 남아있는 주문 데이터 정리
+        customerRepository.deleteAll(testCustomers);
+        productRepository.deleteAll(testProducts);
+    }
+
+    private void createTestCustomersForBatch() {
+        // BatchControllerTest에서 사용할 이메일 목록
+        List<String> emails = List.of("batch1@example.com", "batch2@example.com", "batch3@example.com", "manual@example.com");
+
+        emails.forEach(email -> {
+            Customer customer = Customer.builder()
+                    .email(email)
+                    .password("batch_pass")
+                    .username("Batch User " + email.split("@")[0])
+                    .address("Batch Address")
+                    .postalCode(54321)
+                    .build();
+            testCustomers.add(customerRepository.save(customer));
+        });
+    }
+
+    // **추가: Batch용 Product 데이터 생성 메서드**
+    private void createTestProductsForBatch() {
+
+        Product product1 = Product.builder().name("Batch Product 1").price(100).stock(100).build();
+        Product product2 = Product.builder().name("Batch Product 2").price(200).stock(200).build();
+        Product product3 = Product.builder().name("Batch Product 3").price(300).stock(300).build();
+
+        testProducts.add(productRepository.save(product1));
+        testProducts.add(productRepository.save(product2));
+        testProducts.add(productRepository.save(product3));
     }
 
     private void createTestOrdersForBatch() {
+        Long productId1 = testProducts.get(0).getId();
+        Long productId2 = testProducts.get(1).getId();
+        Long productId3 = testProducts.get(2).getId();
+
         LocalDateTime yesterday14 = LocalDateTime.now().minusDays(1).withHour(14).withMinute(0);
         LocalDateTime today14 = LocalDateTime.now().withHour(14).withMinute(0);
 
         // 배치 처리 대상 주문들 (전날 14시 ~ 오늘 14시)
         Order order1 = Order.builder()
                 .customerEmail("batch1@example.com")
-                .productId(1L)
+                .productId(productId1)
                 .orderDate(yesterday14.plusHours(1))
                 .orderState(false)
                 .quantity(2)
@@ -83,7 +136,7 @@ class BatchControllerTest {
 
         Order order2 = Order.builder()
                 .customerEmail("batch2@example.com")
-                .productId(2L)
+                .productId(productId2)
                 .orderDate(today14.minusHours(1))
                 .orderState(false)
                 .quantity(1)
@@ -92,7 +145,7 @@ class BatchControllerTest {
         // 처리 대상이 아닌 주문 (이미 처리됨)
         Order order3 = Order.builder()
                 .customerEmail("batch3@example.com")
-                .productId(3L)
+                .productId(productId3)
                 .orderDate(yesterday14.plusHours(2))
                 .orderState(true)
                 .quantity(3)
@@ -253,8 +306,8 @@ class BatchControllerTest {
         LocalDateTime cutoffYesterday = LocalDateTime.now().minusDays(1).withHour(14).withMinute(0);
         LocalDateTime cutoffToday = LocalDateTime.now().withHour(14).withMinute(0);
 
-        String startTimeStr = cutoffYesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
-        String endTimeStr = cutoffToday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        String startTimeStr = cutoffToday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        String endTimeStr = cutoffYesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
 
         ResultActions resultActions = mvc
                 .perform(
