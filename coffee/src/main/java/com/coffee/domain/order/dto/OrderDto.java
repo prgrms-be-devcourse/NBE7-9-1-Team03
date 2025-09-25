@@ -1,5 +1,6 @@
 package com.coffee.domain.order.dto;
 
+import com.coffee.domain.customer.dto.CustomerDto;
 import com.coffee.domain.order.entity.Order;
 import com.coffee.domain.product.dto.ProductDto;
 import lombok.*;
@@ -22,7 +23,7 @@ public class OrderDto {
     // 상품 정보를 담을 DTO 필드
     private ProductDto productDto;
     // 고객 정보를 담을 DTO 필드
-    private CustomerDTO customerDto;
+    private CustomerDto customerDto;
 
     // Entity to DTO
     public static OrderDto from(Order order) {
@@ -41,7 +42,7 @@ public class OrderDto {
 
         // Customer 정보가 있다면 DTO에 추가
         if (order.getCustomer() != null) {
-            builder.customerDto(CustomerDTO.from(order.getCustomer())); // customerDto → CustomerDTO
+            builder.customerDto(CustomerDto.from(order.getCustomer())); // customerDto → CustomerDTO
         }
 
         return builder.build();

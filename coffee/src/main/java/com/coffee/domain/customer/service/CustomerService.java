@@ -1,7 +1,7 @@
-package com.coffee.domain.user.service;
+package com.coffee.domain.customer.service;
 
-import com.coffee.domain.user.entity.Customer;
-import com.coffee.domain.user.repository.CustomerRepository;
+import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.repository.CustomerRepository;
 import com.coffee.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

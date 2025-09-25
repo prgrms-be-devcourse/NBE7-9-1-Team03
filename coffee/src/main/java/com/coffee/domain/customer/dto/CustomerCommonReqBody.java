@@ -1,4 +1,4 @@
-package com.coffee.domain.user.dto;
+package com.coffee.domain.customer.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

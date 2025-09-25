@@ -1,6 +1,6 @@
-package com.coffee.product.repository;
+package com.coffee.domain.product.repository;
 
-import com.coffee.product.entity.Product;
+import com.coffee.domain.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

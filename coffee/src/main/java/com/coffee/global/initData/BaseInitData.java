@@ -1,6 +1,6 @@
 package com.coffee.global.initData;
 
-import com.coffee.domain.user.service.CustomerService;
+import com.coffee.domain.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;

@@ -1,8 +1,10 @@
-package com.coffee.domain.user.entity;
+package com.coffee.domain.customer.entity;
 
 import com.coffee.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +12,9 @@ import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
+@Builder
 public class Customer extends BaseEntity {
 
     @Column(unique=true)

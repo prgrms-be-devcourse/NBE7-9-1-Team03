@@ -1,17 +1,14 @@
-package com.coffee.product.entity;
+package com.coffee.domain.product.entity;
 
 
-import com.coffee.product.dto.ProductDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class Product {
 
     @Id

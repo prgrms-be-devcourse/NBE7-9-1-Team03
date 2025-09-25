@@ -1,5 +1,7 @@
 package com.coffee.domain.order.entity;
 
+import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

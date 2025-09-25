@@ -1,7 +1,7 @@
 package com.coffee.global.rq;
 
-import com.coffee.domain.user.entity.Customer;
-import com.coffee.domain.user.service.CustomerService;
+import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;

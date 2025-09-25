@@ -1,10 +1,10 @@
-package com.coffee.domain.user.controller;
+package com.coffee.domain.customer.controller;
 
-import com.coffee.domain.user.dto.CustomerCommonResBody;
-import com.coffee.domain.user.dto.CustomerDto;
-import com.coffee.domain.user.dto.CustomerCommonReqBody;
-import com.coffee.domain.user.entity.Customer;
-import com.coffee.domain.user.service.CustomerService;
+import com.coffee.domain.customer.dto.CustomerCommonResBody;
+import com.coffee.domain.customer.dto.CustomerDto;
+import com.coffee.domain.customer.dto.CustomerCommonReqBody;
+import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
 import com.coffee.global.rq.Rq;
 import com.coffee.global.rsData.RsData;
