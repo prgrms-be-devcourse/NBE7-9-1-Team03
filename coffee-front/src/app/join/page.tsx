@@ -4,11 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 async function safeJson(res: Response) {
-    try {
-        return await res.json();
-    } catch {
-        return null;
-    }
+    try { return await res.json(); } catch { return null; }
 }
 
 export default function SignupPage() {
@@ -27,21 +23,41 @@ export default function SignupPage() {
         e.preventDefault();
         setError(null);
 
+        if (password.length < 8) {
+            setError("비밀번호는 8자 이상이어야합니다.");
+            return;
+        }
+
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+            && /@(naver\.com|gmail\.com|daum\.net|nate\.com|hanmail\.net|kakao\.com)$/i.test(email);
+        if (!emailOk) {
+            setError("올바른 이메일 형식이 아닙니다.");
+            return;
+        }
+
+        if (!/^[가-힣a-zA-Z0-9\s-]{5,100}$/.test(address)) {
+            setError("주소는 한글, 영문, 숫자, 공백, 하이픈(-)만 가능하며 5~100자 이내여야 합니다.");
+            return;
+        }
+
+        if (!/^\d{5}$/.test(postalCode)) {
+            setError("우편번호는 숫자 5자리여야 합니다.");
+            return;
+        }
         setLoading(true);
         try {
-            const res = await fetch("/customer/join", {
+            const res = await fetch("api/customer/join", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ email, password, username, address, postalCode }),
             });
 
-            if (!res.ok) {
-                const data = await safeJson(res);
+            const data = await safeJson(res);
+            if (!res.ok || data?.code !== "201") {
                 const msg = data?.message || data?.msg || `회원가입 실패 (${res.status})`;
                 throw new Error(msg);
             }
-
             router.replace("/login");
         } catch (err: any) {
             setError(err?.message ?? "회원가입 중 오류가 발생했습니다.");
@@ -64,91 +80,51 @@ export default function SignupPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">
-                            이메일
-                        </label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                            placeholder="you@example.com"
-                            required
-                            autoComplete="email"
-                        />
+                        <label htmlFor="email" className="block text-sm font-medium mb-1 text-gray-700">이메일</label>
+                        <input id="email" type="text" value={email}
+                               onChange={(e) => setEmail(e.target.value)}
+                               className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
+                               placeholder="you@example.com" required autoComplete="email" />
                     </div>
 
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">
-                            사용자 이름
-                        </label>
-                        <input
-                            id="username"
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                            placeholder="별명 또는 이름"
-                            required
-                        />
+                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">사용자 이름</label>
+                        <input id="username" type="text" value={username}
+                               onChange={(e) => setUsername(e.target.value)}
+                               className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
+                               placeholder="별명 또는 이름" required />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">
-                            비밀번호
-                        </label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                            placeholder="8자 이상"
-                            required
-                            autoComplete="new-password"
-                            minLength={8}
-                        />
+                        <label htmlFor="password" className="block text-sm font-medium mb-1 text-gray-700">비밀번호</label>
+                        <input id="password" type="password" value={password}
+                               onChange={(e) => setPassword(e.target.value)}
+                               className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
+                               placeholder="8자 이상" required autoComplete="new-password" />
                     </div>
 
                     <div>
-                        <label htmlFor="address" className="block text-sm font-medium mb-1 text-gray-700">
-                            주소
-                        </label>
-                        <input
-                            id="address"
-                            type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                            placeholder="거주지 주소"
-                            required
-                        />
+                        <label htmlFor="address" className="block text-sm font-medium mb-1 text-gray-700">주소</label>
+                        <input id="address" type="text" value={address}
+                               onChange={(e) => setAddress(e.target.value)}
+                               className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
+                               placeholder="거주지 주소" required />
                     </div>
 
                     <div>
-                        <label htmlFor="postalCode" className="block text-sm font-medium mb-1 text-gray-700">
-                            우편번호
-                        </label>
-                        <input
-                            id="postalCode"
-                            type="text"
-                            value={postalCode}
-                            onChange={(e) => setPostalCode(e.target.value)}
-                            className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                            placeholder="우편번호"
-                            required
-                        />
+                        <label htmlFor="postalCode" className="block text-sm font-medium mb-1 text-gray-700">우편번호</label>
+                        <input id="postalCode" type="text" value={postalCode}
+                               onChange={(e) => setPostalCode(e.target.value)}
+                               className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
+                               placeholder="우편번호" required />
                     </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full rounded-xl bg-black text-white py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50"
-                    >
+                    <button type="submit" disabled={loading}
+                            className="w-full rounded-xl bg-black text-white py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50">
                         {loading ? "처리 중..." : "회원가입"}
                     </button>
                 </form>
+
                 <p className="mt-6 text-center text-sm text-gray-500">
                     이미 계정이 있나요? <a className="underline" href="/login">로그인</a>
                 </p>
@@ -156,6 +132,5 @@ export default function SignupPage() {
         </div>
     );
 }
-
 
 
