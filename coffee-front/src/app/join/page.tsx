@@ -27,7 +27,6 @@ export default function SignupPage() {
         e.preventDefault();
         setError(null);
 
-
         setLoading(true);
         try {
             const res = await fetch("/customer/join", {
@@ -43,7 +42,7 @@ export default function SignupPage() {
                 throw new Error(msg);
             }
 
-            router.replace("/customer/login");
+            router.replace("/login");
         } catch (err: any) {
             setError(err?.message ?? "회원가입 중 오류가 발생했습니다.");
         } finally {
@@ -150,7 +149,6 @@ export default function SignupPage() {
                         {loading ? "처리 중..." : "회원가입"}
                     </button>
                 </form>
-
                 <p className="mt-6 text-center text-sm text-gray-500">
                     이미 계정이 있나요? <a className="underline" href="/login">로그인</a>
                 </p>
@@ -158,3 +156,6 @@ export default function SignupPage() {
         </div>
     );
 }
+
+
+

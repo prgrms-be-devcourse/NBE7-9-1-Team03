@@ -1,8 +1,8 @@
-package com.coffee.product.service;
+package com.coffee.domain.product.service;
 
 
-import com.coffee.product.entity.Product;
-import com.coffee.product.repository.ProductRepository;
+import com.coffee.domain.product.entity.Product;
+import com.coffee.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

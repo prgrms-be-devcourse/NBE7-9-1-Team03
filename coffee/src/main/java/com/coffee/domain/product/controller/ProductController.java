@@ -1,9 +1,9 @@
-package com.coffee.product.controller;
+package com.coffee.domain.product.controller;
 
 import com.coffee.global.rsData.RsData;
-import com.coffee.product.dto.ProductDto;
-import com.coffee.product.entity.Product;
-import com.coffee.product.service.ProductService;
+import com.coffee.domain.product.dto.ProductDto;
+import com.coffee.domain.product.entity.Product;
+import com.coffee.domain.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

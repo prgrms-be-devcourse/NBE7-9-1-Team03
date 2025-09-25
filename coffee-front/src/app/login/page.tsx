@@ -14,15 +14,9 @@ export default function LoginPage() {
         e.preventDefault();
         setError(null);
 
-        // 간단한 이메일 형식 체크
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError("이메일 형식이 올바르지 않습니다.");
-            return;
-        }
-
         setLoading(true);
         try {
-            const res = await fetch("/customer/login", {
+            const res = await fetch("/api/customer/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -30,15 +24,12 @@ export default function LoginPage() {
             });
 
             if (!res.ok) {
-                // ServiceException("401", "메시지") 형태를 가정
                 const data = await safeJson(res);
                 const msg = data?.message || data?.msg || `로그인 실패 (${res.status})`;
                 throw new Error(msg);
             }
+            router.replace("/"); // 성공하면 메인 페이지로 이동
 
-            // 성공 처리: 필요시 응답(JSON) 사용
-            // const data = await res.json(); // { id, email, username, apiKey, ... } 등
-            router.replace("/");
         } catch (err: any) {
             setError(err?.message ?? "로그인 중 오류가 발생했습니다.");
         } finally {
@@ -71,6 +62,7 @@ export default function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)} // ✅ 비밀번호 상태 업데이트
                         placeholder="비밀번호"
                         required
+                        minLength={8}
                         className="border rounded px-3 py-2"
                     />
                 </label>
@@ -85,6 +77,9 @@ export default function LoginPage() {
                     {loading ? "로그인 중..." : "로그인"}
                 </button>
             </form>
+            <p className="mt-6 text-center text-sm text-gray-500">
+                계정이 없나요? <a className="underline" href="/join">회원가입</a>
+            </p>
         </div>
     );
 }
@@ -96,4 +91,7 @@ async function safeJson(res: Response) {
         return null;
     }
 }
+
+
+
 

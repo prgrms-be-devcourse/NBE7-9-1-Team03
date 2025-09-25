@@ -1,59 +1,69 @@
 package com.coffee.domain.order.service;
 
+import com.coffee.domain.order.dto.OrderDto;
 import com.coffee.domain.order.entity.Order;
 import com.coffee.domain.order.repository.OrderRepository;
-import com.coffee.domain.user.entity.User; // User import 추가
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true) // 기본적으로 읽기 전용
+@Transactional(readOnly = true) // 기본 읽기 전용
 public class OrderService {
 
     private final OrderRepository orderRepository;
 
-    @Transactional // 쓰기 작업이므로 readOnly = false
-    public Order createOrder(User user) {
+    @Transactional
+    public LocalDateTime createOrder(OrderDto dto) {
         Order order = Order.builder()
-                .userId(user.getUserId())
-                .orderDay(LocalDateTime.now())
+                .customerEmail(dto.getCustomerEmail())
+                .productId(dto.getProductId())  // 추가
+                .orderDate(LocalDateTime.now())
+                .orderState(false)
+                .quantity(dto.getQuantity())
                 .build();
 
-        return orderRepository.save(order);
+        orderRepository.save(order);
+        // order ID는 단순히 내부 관리용이고 실제로는 고객 이메일과 주문 날짜로 조회할 것이므로 반환하지 않음
+        return order.getOrderDate();
     }
 
-    public long count() {
-        return orderRepository.count();
-    }
+    public List<OrderDto> findByCustomerEmail(String customerEmail) {
+        List<Order> orders = orderRepository.findByCustomerEmail(customerEmail);
 
-    public Optional<Order> findById(Long id) { // long -> Long 권장
-        return orderRepository.findById(id);
-    }
+        if (orders.isEmpty()) {
+            return List.of(); // 빈 리스트 반환
+        }
 
-    public List<Order> findAll() {
-        return orderRepository.findAll();
-    }
-
-    @Transactional // 수정 작업이므로 readOnly = false
-    public void updateOrderState(Long orderId, Boolean state) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다"));
-
-        order.setOrderState(state);
+        return orders.stream()
+                .map(OrderDto::from)
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public void delete(Order order) {
-        orderRepository.delete(order);
+    public LocalDateTime updateOrder(OrderDto dto) {
+        Order order = orderRepository.findById(dto.getOrderId())
+                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다"));
+
+        if (dto.getQuantity() != null) {
+            order.setQuantity(dto.getQuantity());
+            order.setOrderDate(LocalDateTime.now());
+        }
+        if (dto.getOrderState() != null) {
+            order.setOrderState(dto.getOrderState());
+            order.setOrderDate(LocalDateTime.now());
+        }
+        //주문 수정이 일어난 경우 현재 시간을 주문 시간으로 설정하기 때문에 현재시각을 반환
+        return LocalDateTime.now();
     }
 
-    public void flush() {
-        orderRepository.flush();
+    @Transactional
+    public void deleteByOrderId(Long orderId) {
+        orderRepository.deleteById(orderId);
     }
 }
