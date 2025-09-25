@@ -23,7 +23,7 @@ public class OrderController {
     @GetMapping("/{customerEmail}")
     @Operation(summary = "특정 고객의 주문 목록 조회")
     public RsData<List<OrderDto>> getOrder(@PathVariable String customerEmail) {
-        List<OrderDto> orders = orderService.findByCustomerEmail(customerEmail);
+        List<OrderDto> orders = orderService.findAllByCustomerEmail(customerEmail);
 
         return new RsData<>(
                 "200-1",
@@ -32,12 +32,12 @@ public class OrderController {
         );
     }
 
-    @DeleteMapping("/{orderId}")
+    @DeleteMapping("/{customerEmail}")
     @Operation(summary = "주문 취소")
     public RsData<Void> cancelOrder(
-            @PathVariable Long orderId
+            @PathVariable String customerEmail
     ) {
-        orderService.deleteByOrderId(orderId);
+        orderService.deleteByCustomerEmail(customerEmail);
 
         return new RsData<>(
                 "200-1",
@@ -49,12 +49,24 @@ public class OrderController {
     @PutMapping("/{orderId}")
     @Operation(summary = "주문 수정")
     public RsData<Void> updateOrder(
-            @RequestBody @Valid OrderDto reqBody,
+            @RequestBody List<OrderDto> reqBody,
             @PathVariable Long orderId
     ) {
 
         // 서비스에서 주문을 생성하고, 주문 시간을 반환받습니다.
-        LocalDateTime orderTime = orderService.updateOrder(reqBody);
+        LocalDateTime orderTime = null;
+
+        for (OrderDto orderDto : reqBody) {
+            orderTime = orderService.updateOrder(orderDto);
+        }
+
+        if(orderTime == null) {
+            return new RsData<>(
+                    "400-1",
+                    "주문 수정에 실패했습니다.",
+                    null
+            );
+        }
 
         // 주문 시간에 따라 메시지를 동적으로 생성합니다.
         String message = (orderTime.getHour() >= 14)
@@ -70,11 +82,19 @@ public class OrderController {
 
     @PostMapping("")
     @Operation(summary = "주문")
-    public RsData<Void> createOrder(@RequestBody @Valid OrderDto reqBody) {
+    public RsData<Void> createOrder(@RequestBody List<@Valid OrderDto> reqBody) {
+        LocalDateTime orderTime = null;
+        for (OrderDto orderDto : reqBody) {
+            orderTime = orderService.createOrder(orderDto);
+        }
 
-        // 서비스에서 주문을 생성하고, 주문 시간을 반환받습니다.
-        LocalDateTime orderTime = orderService.createOrder(reqBody);
-
+        if(orderTime == null) {
+            return new RsData<>(
+                    "400-1",
+                    "주문에 실패했습니다.",
+                    null
+            );
+        }
         // 주문 시간에 따라 메시지를 동적으로 생성합니다.
         String message = (orderTime.getHour() >= 14)
                 ? "당일 오후 2시 이후의 주문 건은 다음 날 배송이 시작됩니다."

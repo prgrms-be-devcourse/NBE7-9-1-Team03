@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +34,8 @@ public class OrderService {
         return order.getOrderDate();
     }
 
-    public List<OrderDto> findByCustomerEmail(String customerEmail) {
-        List<Order> orders = orderRepository.findByCustomerEmail(customerEmail);
+    public List<OrderDto> findAllByCustomerEmail(String customerEmail) {
+        List<Order> orders = orderRepository.findAllByCustomerEmail(customerEmail);
 
         if (orders.isEmpty()) {
             return List.of(); // 빈 리스트 반환
@@ -48,7 +49,7 @@ public class OrderService {
     @Transactional
     public LocalDateTime updateOrder(OrderDto dto) {
         Order order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new RuntimeException("주문을 찾을 수 없습니다"));
+                .orElseThrow(() -> new NoSuchElementException("주문을 찾을 수 없습니다"));
 
         if (dto.getQuantity() != null) {
             order.setQuantity(dto.getQuantity());
@@ -63,7 +64,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void deleteByOrderId(Long orderId) {
-        orderRepository.deleteById(orderId);
+    public void deleteByCustomerEmail(String customerEmail) {
+        orderRepository.deleteByCustomerEmail(customerEmail);
     }
 }

@@ -17,5 +17,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     // 조회용 (배치 실행 전 확인용)
     List<Order> findByOrderDateBetweenAndOrderState(LocalDateTime startTime, LocalDateTime endTime, Boolean orderState);
 
-    List<Order> findByCustomerEmail(String customerEmail);
+    List<Order> findAllByCustomerEmail(String customerEmail);
+
+    void deleteByCustomerEmail(String customerEmail);
 }
