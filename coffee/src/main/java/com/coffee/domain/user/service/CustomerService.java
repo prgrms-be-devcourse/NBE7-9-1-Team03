@@ -56,6 +56,10 @@ public class CustomerService {
     public void modifyMe(Customer customer, String username, String address, Integer postalCode) {
         customer.updateInfo(username, address, postalCode);     // JPA 더티체킹으로 update
     }
+
+    public void quit(Customer actor) {
+        customerRepository.delete(actor);
+    }
 }
 
 /*

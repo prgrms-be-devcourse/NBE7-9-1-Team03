@@ -34,7 +34,7 @@ public class ApiV1CustomerController {
     @Operation(summary = "고객 정보 조회-email")
     public CustomerDto getUserById(@PathVariable String email) {
         Customer customer = customerService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceException("401", "사용자를 찾을 수 없습니다."));
         return new CustomerDto(customer);
     }
 
@@ -78,7 +78,7 @@ public class ApiV1CustomerController {
     @PostMapping("/login")
     @Operation(summary = "로그인")
     public RsData<CustomerDto> login(
-            @RequestBody @Valid LoginReqBody reqBody
+            @RequestBody @Valid ApiV1CustomerController.QuitReqBody reqBody
     ) {
         Customer customer = customerService.findByEmail(reqBody.email).orElseThrow(
                 () -> new ServiceException("401", "존재하지 않는 아이디 입니다.")
@@ -112,7 +112,7 @@ public class ApiV1CustomerController {
     @GetMapping("/me")
     @Transactional(readOnly = true)
     @Operation(summary = "내 정보 조회")
-    public RsData<CustomerDto> getUserByEmail(@PathVariable String email) {
+    public RsData<CustomerDto> getUserByEmail() {
         Customer customer = customerService.findByEmail(rq.getActor().getEmail()).get();
 
         return new RsData(
@@ -133,7 +133,7 @@ public class ApiV1CustomerController {
         Customer actor = customerService.findByEmail(rq.getActor().getEmail()).get();
 
         // 로그인 중인 이메일 일치 체크
-        if(!actor.getEmail().equals(rq.getActor().getEmail())) {
+        if (!actor.getEmail().equals(reqBody.email())) {
             throw new ServiceException("401", "로그인한 이메일과 다릅니다");
         }
 
@@ -145,6 +145,48 @@ public class ApiV1CustomerController {
         return new RsData(
                 "200",
                 "내 정보 수정 성공"
+        );
+    }
+
+
+    /*
+        탈퇴:
+        로그인 상태에서 이메일 비밀번호 한번 더 입력받습니다
+        로그인 중인 이메일 비밀번호와 일치여부 확인하고 탈퇴시켜줍니다.
+     */
+    record QuitReqBody(
+            @NotBlank
+            @Pattern(
+                    regexp = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+                    message = "올바른 이메일 형식이 아닙니다."
+            )
+            String email,
+
+            @NotBlank
+            @Size(min = 2, max = 30)
+            String password
+    ) {
+    }
+    @DeleteMapping("/quit")
+    @Operation(summary = "회원 탈퇴")
+    public RsData<Void> quit(
+            @RequestBody @Valid QuitReqBody reqBody
+    ) {
+        Customer actor = customerService.findByEmail(rq.getActor().getEmail()).get();
+
+        // 로그인 중인 이메일 일치 체크
+        if (!actor.getEmail().equals(reqBody.email())) {
+            throw new ServiceException("401", "로그인한 이메일과 다릅니다");
+        }
+
+        // 로그인 중인 비밀번호와 일치 체크
+        customerService.checkPassword(actor.getPassword(), reqBody.password());
+
+        customerService.quit(actor);
+
+        return new RsData(
+                "200",
+                "회원 탈퇴 성공"
         );
     }
 }
