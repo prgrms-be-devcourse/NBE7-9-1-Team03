@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");      // ✅ 이메일로 로그인
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -14,22 +14,32 @@ export default function LoginPage() {
         e.preventDefault();
         setError(null);
 
+        const emailOk =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
+            /@(naver\.com|gmail\.com|daum\.net|nate\.com|hanmail\.net|kakao\.com)$/i.test(email);
+        if (!emailOk) {
+            setError("올바른 이메일 형식이 아닙니다.");
+            return;
+        }
+
         setLoading(true);
         try {
-            const res = await fetch("/api/customer/login", {
+            const res = await fetch("/customer/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!res.ok) {
-                const data = await safeJson(res);
+            const data = await safeJson(res);
+            const resultCode = data?.resultCode ?? data?.code;
+
+            if (!res.ok || resultCode !== "200") {
                 const msg = data?.message || data?.msg || `로그인 실패 (${res.status})`;
                 throw new Error(msg);
             }
-            router.replace("/"); // 성공하면 메인 페이지로 이동
 
+            router.replace("/");
         } catch (err: any) {
             setError(err?.message ?? "로그인 중 오류가 발생했습니다.");
         } finally {
@@ -45,9 +55,9 @@ export default function LoginPage() {
                 <label className="flex flex-col gap-1">
                     <span className="text-sm font-medium">이메일</span>
                     <input
-                        type="email"
+                        type="text"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}  // ✅ 이메일 상태 업데이트
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
                         required
                         className="border rounded px-3 py-2"
@@ -59,7 +69,7 @@ export default function LoginPage() {
                     <input
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)} // ✅ 비밀번호 상태 업데이트
+                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="비밀번호"
                         required
                         minLength={8}
