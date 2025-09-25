@@ -1,8 +1,6 @@
 package com.coffee.domain.customer.entity;
 
-import com.coffee.global.jpa.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,18 +13,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 @Builder
-public class Customer extends BaseEntity {
-
-    @Column(unique=true)
+public class Customer{
+    @Id
+    @Column(name = "email", unique=true)
     private String email;       // 사용자 이메일(아이디로 사용)
 
+    @Column(name = "password", nullable = false)
     private String password;    // 비밀번호
 
-    @Column(unique=true)
+    @Column(name = "api_key", nullable = false)
     private String apiKey;
 
+    @Column(name = "username", nullable = false)
     private String username;    // 이름
+    @Column(name = "address", nullable = false)
     private String address;     // 주소
+    @Column(name = "postal_code", nullable = false)
     private Integer postalCode;  // 우편번호
 
     public Customer(String email, String password, String username, String address, Integer postalCode) {
