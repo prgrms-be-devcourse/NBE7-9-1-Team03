@@ -20,7 +20,7 @@ export default function Home() {
 
   // 1) 상품 목록 조회
   useEffect(() => {
-    fetchApi(`/products`)
+    fetchApi<ProductDto[]>(`/products`)
       .then(setProducts)
       .catch((e) => {
         setListError(e.message || "상품 목록 조회 실패");
@@ -102,7 +102,9 @@ export default function Home() {
     }));
 
     try {
-      const data = await fetchApi(`/orders`, {
+      type OrderResponse = { msg: string };
+
+      const data = await fetchApi<OrderResponse>(`/orders`, {
         method: "POST",
         body: JSON.stringify(body),
       });
@@ -136,6 +138,7 @@ export default function Home() {
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {products.map((p) => (
               <li key={p.id} className="border rounded p-3 flex flex-col gap-2">
+                <img src={p.imageUrl} />
                 <div className="font-semibold">{p.name}</div>
                 <div className="font-bold">
                   {p.price.toLocaleString()}원
