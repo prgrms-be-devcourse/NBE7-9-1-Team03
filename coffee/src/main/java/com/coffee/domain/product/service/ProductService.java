@@ -2,6 +2,8 @@ package com.coffee.domain.product.service;
 
 
 import com.coffee.domain.product.entity.Product;
+import com.coffee.domain.product.entity.Product;
+import com.coffee.domain.product.repository.ProductRepository;
 import com.coffee.domain.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,14 +29,14 @@ public class ProductService {
     }
 
     @Transactional
-    public Product create(String name, int price, int stock) {
-        Product p = new Product(name, price, stock);
+    public Product create(String name, int price, int stock, String imageUrl) {
+        Product p = new Product(name, price, stock, imageUrl);
         return productRepository.save(p);
     }
 
     @Transactional
-    public void modify(Product p, String name, int price, int stock) {
-        p.modify(name, price, stock);
+    public void modify(Product p, String name, int price, int stock, String imageUrl) {
+        p.modify(name, price, stock, imageUrl);
     }
 
     @Transactional
