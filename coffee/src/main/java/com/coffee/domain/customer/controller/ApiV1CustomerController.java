@@ -151,6 +151,9 @@ public class ApiV1CustomerController {
         customerService.checkPassword(actor.getPassword(), reqBody.password());
 
         customerService.modifyMe(actor, reqBody.username(), reqBody.address(), Integer.parseInt(reqBody.postalCode()));
+        String accessToken =  authService.genAccessToken(actor);
+        rq.setCookie("accessToken", accessToken);
+
 
         return new RsData(
                 "200",
@@ -193,6 +196,9 @@ public class ApiV1CustomerController {
         customerService.checkPassword(actor.getPassword(), reqBody.password());
 
         customerService.quit(actor);
+
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("refreshToken");
 
         return new RsData(
                 "200",
