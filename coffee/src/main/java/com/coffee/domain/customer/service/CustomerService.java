@@ -15,6 +15,7 @@ import java.util.Optional;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final AuthService authService;
 
 
     public long count() {
@@ -33,23 +34,36 @@ public class CustomerService {
     }
 
     public Customer join(String email, String password, String username, String address, Integer postalCode) {
-        Customer customer = new Customer(email, password, username, address, postalCode);
-
         findByEmail(email).ifPresent(customer1 -> {
             throw new ServiceException("401", "이미 사용중인 이메일입니다");
         });
 
+        Customer customer = new Customer(email, password, username, address, postalCode);
+        customer.updateRefreshToken(authService.genRefreshToken(customer));     // refresh토큰 설정
+
         return customerRepository.save(customer);
+    }
+
+    public Customer login(String email, String password){
+        Customer customer = findByEmail(email).orElseThrow(
+                () -> new ServiceException("401", "존재하지 않는 아이디 입니다.")
+        );
+        checkPassword(password, customer.getPassword());
+
+        customer.updateRefreshToken(authService.genRefreshToken(customer));
+        return customerRepository.save(customer);
+    }
+
+    public void logout(Customer customer) {
+        // RefreshToken 제거
+        customer.clearRefreshToken();
+        customerRepository.save(customer);
     }
 
     public void checkPassword(String inputPass, String rawPass){
         if(!inputPass.equals(rawPass)){
             throw new ServiceException("401", "비밀번호가 일치하지 않습니다");
         }
-    }
-
-    public Optional<Customer> findByApiKey(String apiKey) {
-        return customerRepository.findByApiKey(apiKey);
     }
 
     @Transactional
@@ -60,19 +74,14 @@ public class CustomerService {
     public void quit(Customer actor) {
         customerRepository.delete(actor);
     }
-}
 
-/*
-@Transactional
-    public Customer join(String email, String password, String username, String address, Integer postalCode) {
-        return customerRepository.findByEmail(email)
-                .map(existing -> {
-                    existing.updateInfo(username, address, postalCode); // 더티체킹으로 update sql
-                    return existing;
-                })
-                .orElseGet(() -> {
-                    Customer newCustomer = new Customer(email, username, address, postalCode);
-                    return customerRepository.save(newCustomer);
-                });
+    @Transactional
+    public void updateRefreshToken(Customer customer, String refreshToken) {
+        customer.updateRefreshToken(refreshToken);
     }
- */
+
+    @Transactional
+    public void clearRefreshToken(Customer customer) {
+        customer.updateRefreshToken(null);
+    }
+}
