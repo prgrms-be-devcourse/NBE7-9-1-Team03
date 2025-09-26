@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const API = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
+
 export default function LoginPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");      // ✅ 이메일로 로그인
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -14,30 +16,30 @@ export default function LoginPage() {
         e.preventDefault();
         setError(null);
 
-        // 간단한 이메일 형식 체크
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            setError("이메일 형식이 올바르지 않습니다.");
+        const EMAIL_RE = new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+        const emailOk = EMAIL_RE.test(email);
+        if (!emailOk) {
+            setError("올바른 이메일 형식이 아닙니다.");
             return;
         }
 
         setLoading(true);
         try {
-            const res = await fetch("/customer/login", {
+            const res = await fetch(`${API}/customer/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!res.ok) {
-                // ServiceException("401", "메시지") 형태를 가정
-                const data = await safeJson(res);
+            const data = await safeJson(res);
+            const resultCode = data?.resultCode ?? data?.code;
+
+            if (!res.ok || resultCode !== "200") {
                 const msg = data?.message || data?.msg || `로그인 실패 (${res.status})`;
                 throw new Error(msg);
             }
 
-            // 성공 처리: 필요시 응답(JSON) 사용
-            // const data = await res.json(); // { id, email, username, apiKey, ... } 등
             router.replace("/");
         } catch (err: any) {
             setError(err?.message ?? "로그인 중 오류가 발생했습니다.");
@@ -54,9 +56,9 @@ export default function LoginPage() {
                 <label className="flex flex-col gap-1">
                     <span className="text-sm font-medium">이메일</span>
                     <input
-                        type="email"
+                        type="text"
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}  // ✅ 이메일 상태 업데이트
+                        onChange={(e) => setEmail(e.target.value)}
                         placeholder="example@email.com"
                         required
                         className="border rounded px-3 py-2"
@@ -68,9 +70,10 @@ export default function LoginPage() {
                     <input
                         type="password"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)} // ✅ 비밀번호 상태 업데이트
+                        onChange={(e) => setPassword(e.target.value)}
                         placeholder="비밀번호"
                         required
+                        minLength={8}
                         className="border rounded px-3 py-2"
                     />
                 </label>
@@ -85,6 +88,9 @@ export default function LoginPage() {
                     {loading ? "로그인 중..." : "로그인"}
                 </button>
             </form>
+            <p className="mt-6 text-center text-sm text-gray-500">
+                계정이 없나요? <a className="underline" href="/join">회원가입</a>
+            </p>
         </div>
     );
 }
@@ -96,4 +102,3 @@ async function safeJson(res: Response) {
         return null;
     }
 }
-
