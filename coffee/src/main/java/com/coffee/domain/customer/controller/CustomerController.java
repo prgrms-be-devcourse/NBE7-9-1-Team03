@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/customer")
 @Tag(name = "ApiV1CustomerController", description = "고객정보 API")
-public class ApiV1CustomerController {
+public class CustomerController {
 
     private final CustomerService customerService;
     private final Rq rq;
