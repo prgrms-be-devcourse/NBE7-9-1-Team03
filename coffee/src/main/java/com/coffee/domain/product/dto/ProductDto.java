@@ -10,10 +10,11 @@ public record ProductDto(
         Long id,
         String name,
         int price,
-        int stock
+        int stock,
+        String imageUrl
 ) {
     public ProductDto(Product p) {
-        this(p.getId(), p.getName(), p.getPrice(), p.getStock());
+        this(p.getId(), p.getName(), p.getPrice(), p.getStock(), p.getImageUrl());
     }
 
     public static ProductDto from(Product product) {
@@ -21,8 +22,8 @@ public record ProductDto(
                 .id(product.getId())
                 .name(product.getName())
                 .price(product.getPrice())
-                .stock(product.getStock());
-
+                .stock(product.getStock())
+                .imageUrl(product.getImageUrl());
         return builder.build();
     }
 
@@ -32,6 +33,7 @@ public record ProductDto(
                 .name(this.name)
                 .price(this.price)
                 .stock(this.stock)
+                .imageUrl(this.imageUrl)
                 .build();
     }
 }
