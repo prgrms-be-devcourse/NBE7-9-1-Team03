@@ -28,6 +28,9 @@ public class Customer{
     private String address;     // 주소
     private Integer postalCode;  // 우편번호
 
+    @Column(nullable = false)
+    private int role = 0; // 0 = USER, 1 = ADMIN
+
     public Customer(String email, String password, String username, String address, Integer postalCode) {
         this.email = email;
         this.password = password;
