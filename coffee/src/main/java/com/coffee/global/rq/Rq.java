@@ -1,6 +1,7 @@
 package com.coffee.global.rq;
 
 import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.service.AuthService;
 import com.coffee.domain.customer.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
 import jakarta.servlet.http.Cookie;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -18,28 +20,68 @@ public class Rq {
     private final CustomerService customerService;
     private final HttpServletRequest request;
     private final HttpServletResponse response;
+    private final AuthService authService;
 
+    /*
+    Http요청에 담긴 헤더, 쿠키정보를 보고 현재 로그인 중인 사용자를 가져오는 메서드입니다.
+    Rq.getActor() 와 CustomerService.findByEmail
+     */
     public Customer getActor() {
-        String apiKey;
+        String accessToken;
+        String refreshToken;
+
         String headerAuthorization = getHeader("Authorization", "");
 
         if (!headerAuthorization.isBlank()) {
             if (!headerAuthorization.startsWith("Bearer "))
-                throw new ServiceException("401", "Authorization 헤더가 Bearer 형식이 아닙니다.");
+                throw new ServiceException("401-1", "Authorization 헤더가 Bearer 형식이 아닙니다.");
 
-            String[] headerAuthorizationBits = headerAuthorization.split(" ", 3);
-            apiKey = headerAuthorizationBits[1];
+            String[] bits = headerAuthorization.split(" ");
+            accessToken = bits.length >= 2 ? bits[1] : "";
+            refreshToken = bits.length >= 3 ? bits[2] : "";
         } else {
-            apiKey = getCookieValue("apiKey", "");
+            accessToken = getCookieValue("accessToken", "");
+            refreshToken = getCookieValue("refreshToken", "");
         }
 
-        if (apiKey.isBlank())
-            throw new ServiceException("401", "로그인 후 이용해주세요.");
+        if(accessToken.isBlank() && refreshToken.isBlank()){
+            throw new ServiceException("401-2", "로그인 후 이용해주세요.");
+        }
 
-        Customer actor = customerService.findByApiKey(apiKey)
-                .orElseThrow(() -> new ServiceException("401", "API 키가 올바르지 않습니다."));
+        Customer customer = null;
+        boolean isAccessTokenValid = false;
 
-        return actor;
+        // 액세쓰 토큰 검증
+        if(!accessToken.isBlank() && authService.validateToken(accessToken)){
+            Map<String, Object> payload = authService.parseToken(accessToken);
+            String email = (String) payload.get("email");
+            customer = customerService.findByEmail(email)
+                    .orElseThrow(() -> new ServiceException("401-3", "존재하지 않는 사용자"));
+            isAccessTokenValid = true;
+        }
+        // 리프래시 검증, 액세스가 만료상태면 재발급 / 리프래시가 안맞으면 예외던지기
+        if (!isAccessTokenValid && !refreshToken.isBlank()) {
+            Map<String, Object> payload = authService.parseToken(refreshToken);
+            if(payload == null){
+                throw new ServiceException("401-4", "유효하지 않은 RefreshToken입니다.");
+            }
+            String email = (String) payload.get("email");
+            customer = customerService.findByEmail(email)
+                    .orElseThrow(() -> new ServiceException("401-5", "존재하지 않는 사용자"));
+
+            // 새로운 AccessToken 발급
+            String newAccessToken = authService.genAccessToken(customer);
+
+            // 쿠키 및 헤더에 갱신
+            setCookie("accessToken", newAccessToken);
+            setHeader("accessToken", newAccessToken);
+        }
+
+        if (customer == null) {
+            throw new ServiceException("401-6", "인증 실패");
+        }
+
+        return customer;
     }
 
     public void setHeader(String name, String value) {

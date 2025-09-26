@@ -13,7 +13,7 @@ public record CustomerCommonReqBody(
         String email,
 
         @NotBlank
-        @Size(min = 2, max = 30)
+        @Size(min = 8, max = 30)
         String password,
 
         @NotBlank

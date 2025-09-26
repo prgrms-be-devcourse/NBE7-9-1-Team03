@@ -4,6 +4,7 @@ import com.coffee.domain.customer.dto.CustomerCommonResBody;
 import com.coffee.domain.customer.dto.CustomerDto;
 import com.coffee.domain.customer.dto.CustomerCommonReqBody;
 import com.coffee.domain.customer.entity.Customer;
+import com.coffee.domain.customer.service.AuthService;
 import com.coffee.domain.customer.service.CustomerService;
 import com.coffee.global.exception.ServiceException;
 import com.coffee.global.rq.Rq;
@@ -26,6 +27,7 @@ public class ApiV1CustomerController {
 
     private final CustomerService customerService;
     private final Rq rq;
+    private final AuthService authService;
 
 
     // 이메일로 바꾸기
@@ -72,7 +74,8 @@ public class ApiV1CustomerController {
     }
     record LoginResBody(
             CustomerDto customerDto,
-            String apiKey
+            String accessToken,
+            String refreshToken
     ) {
     }
     @PostMapping("/login")
@@ -80,19 +83,21 @@ public class ApiV1CustomerController {
     public RsData<CustomerDto> login(
             @RequestBody @Valid LoginReqBody reqBody
     ) {
-        Customer customer = customerService.findByEmail(reqBody.email).orElseThrow(
-                () -> new ServiceException("401", "존재하지 않는 아이디 입니다.")
-        );
+        Customer customer = customerService.login(reqBody.email(), reqBody.password());
 
-        customerService.checkPassword(reqBody.password, customer.getPassword());
-        rq.setCookie("apiKey", customer.getApiKey());
+        String accessToken =  authService.genAccessToken(customer);
+        String refreshToken = customer.getRefreshToken();
+
+        rq.setCookie("accessToken", accessToken);
+        rq.setCookie("refreshToken", refreshToken);
 
         return new RsData(
                 "200",
                 "로그인 성공",
                 new LoginResBody(
                         new CustomerDto(customer),
-                        customer.getApiKey()
+                        accessToken,
+                        refreshToken
                 )
         );
     }
@@ -100,8 +105,13 @@ public class ApiV1CustomerController {
     @DeleteMapping("/logout")
     @Operation(summary = "로그아웃")
     public RsData<Void> logout() {
+        Customer actor = customerService.findByEmail(rq.getActor().getEmail())
+                .orElseThrow(() -> new ServiceException("401", "존재하지 않는 계정"));
 
-        rq.deleteCookie("apiKey");
+        customerService.logout(actor);
+
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("refreshToken");
 
         return new RsData<>(
                 "200",
@@ -141,6 +151,9 @@ public class ApiV1CustomerController {
         customerService.checkPassword(actor.getPassword(), reqBody.password());
 
         customerService.modifyMe(actor, reqBody.username(), reqBody.address(), Integer.parseInt(reqBody.postalCode()));
+        String accessToken =  authService.genAccessToken(actor);
+        rq.setCookie("accessToken", accessToken);
+
 
         return new RsData(
                 "200",
@@ -163,7 +176,7 @@ public class ApiV1CustomerController {
             String email,
 
             @NotBlank
-            @Size(min = 2, max = 30)
+            @Size(min = 8, max = 30)
             String password
     ) {
     }
@@ -183,6 +196,9 @@ public class ApiV1CustomerController {
         customerService.checkPassword(actor.getPassword(), reqBody.password());
 
         customerService.quit(actor);
+
+        rq.deleteCookie("accessToken");
+        rq.deleteCookie("refreshToken");
 
         return new RsData(
                 "200",
