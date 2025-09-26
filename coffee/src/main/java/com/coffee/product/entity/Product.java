@@ -3,13 +3,15 @@ package com.coffee.product.entity;
 
 import com.coffee.product.dto.ProductDto;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
 public class Product {
 
     @Id
@@ -25,22 +27,16 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
-    @Column(nullable = true, length = 255)
-    private String imageUrl;
-
-
-    public Product(String name, int price, int stock, String imageUrl) {
+    public Product(String name, int price, int stock) {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.imageUrl = imageUrl;
     }
 
-    public void modify(String name, int price, int stock, String imageUrl) {
+    public void modify(String name, int price, int stock) {
         this.name = name;
         this.price = price;
         this.stock = stock;
-        this.imageUrl = imageUrl;
     }
 
 }
