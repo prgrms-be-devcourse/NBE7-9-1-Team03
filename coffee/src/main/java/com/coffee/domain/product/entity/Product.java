@@ -1,6 +1,6 @@
 package com.coffee.domain.product.entity;
 
-
+import com.coffee.domain.product.dto.ProductDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +13,7 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "product_id")
     private Long id;
 
     @Column(nullable = false, length = 50)
@@ -24,16 +25,22 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
-    public Product(String name, int price, int stock) {
+    @Column(nullable = true, length = 255)
+    private String imageUrl;
+
+
+    public Product(String name, int price, int stock, String imageUrl) {
         this.name = name;
         this.price = price;
         this.stock = stock;
+        this.imageUrl = imageUrl;
     }
 
-    public void modify(String name, int price, int stock) {
+    public void modify(String name, int price, int stock, String imageUrl) {
         this.name = name;
         this.price = price;
         this.stock = stock;
+        this.imageUrl = imageUrl;
     }
 
 }
