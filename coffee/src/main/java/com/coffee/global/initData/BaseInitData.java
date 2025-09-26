@@ -1,5 +1,6 @@
 package com.coffee.global.initData;
 
+import com.coffee.domain.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -15,6 +16,7 @@ public class BaseInitData {
     @Autowired
     @Lazy
     private BaseInitData self;
+    private final CustomerService customerService;
 
     @Bean
     ApplicationRunner initDataRunner() {
@@ -27,6 +29,9 @@ public class BaseInitData {
 
     @Transactional
     public void work1() {
+        if(customerService.count() > 0){
+            return;
+        }
     }
 
     @Transactional
