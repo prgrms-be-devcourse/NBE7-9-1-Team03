@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const API = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
+
 async function safeJson(res: Response) {
     try { return await res.json(); } catch { return null; }
 }
@@ -28,8 +30,7 @@ export default function SignupPage() {
             return;
         }
 
-        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-            && /@(naver\.com|gmail\.com|daum\.net|nate\.com|hanmail\.net|kakao\.com)$/i.test(email);
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         if (!emailOk) {
             setError("올바른 이메일 형식이 아닙니다.");
             return;
@@ -46,7 +47,7 @@ export default function SignupPage() {
         }
         setLoading(true);
         try {
-            const res = await fetch("api/customer/join", {
+            const res = await fetch(`${API}/customer/join`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",

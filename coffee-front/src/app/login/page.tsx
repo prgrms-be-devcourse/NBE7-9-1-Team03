@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+const API = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
+
 export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
@@ -15,8 +17,7 @@ export default function LoginPage() {
         setError(null);
 
         const emailOk =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) &&
-            /@(naver\.com|gmail\.com|daum\.net|nate\.com|hanmail\.net|kakao\.com)$/i.test(email);
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         if (!emailOk) {
             setError("올바른 이메일 형식이 아닙니다.");
             return;
@@ -24,7 +25,7 @@ export default function LoginPage() {
 
         setLoading(true);
         try {
-            const res = await fetch("/customer/login", {
+            const res = await fetch(`${API}/customer/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
