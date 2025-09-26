@@ -16,8 +16,8 @@ export default function LoginPage() {
         e.preventDefault();
         setError(null);
 
-        const emailOk =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const EMAIL_RE = new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
+        const emailOk = EMAIL_RE.test(email);
         if (!emailOk) {
             setError("올바른 이메일 형식이 아닙니다.");
             return;
@@ -102,4 +102,3 @@ async function safeJson(res: Response) {
         return null;
     }
 }
-
