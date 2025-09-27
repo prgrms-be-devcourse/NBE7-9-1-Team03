@@ -84,13 +84,12 @@ public class Rq {
         return customer;
     }
 
-    public Customer getAdminActor(){
+    // 관리자 권한 검증
+    public void validateAdminActor() {
         Customer actor = getActor();
-        if(actor.getRole() !=1){
+        if (actor.getRole() != 1) {
             throw new ServiceException("401-7", "관리자 권한이 필요합니다.");
         }
-
-        return actor;
     }
 
     public void setHeader(String name, String value) {
