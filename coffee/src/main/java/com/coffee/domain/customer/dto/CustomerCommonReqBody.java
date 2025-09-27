@@ -1,8 +1,6 @@
 package com.coffee.domain.customer.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record CustomerCommonReqBody(
         @NotBlank
@@ -29,5 +27,10 @@ public record CustomerCommonReqBody(
 
         @NotBlank
         @Pattern(regexp = "\\d{5}", message = "우편번호는 5자리 숫자여야 합니다.")
-        String postalCode
+        String postalCode,
+
+        @NotNull
+        @Min(0)
+        @Max(1)
+        Integer role
 ) {}
