@@ -13,14 +13,6 @@ import org.springframework.context.annotation.Configuration;
 public class SpringDoc {
 
     @Bean
-    public GroupedOpenApi groupApiV1() {
-        return GroupedOpenApi.builder()
-                .group("apiV1")
-                .pathsToMatch("/api/v1/**")
-                .build();
-    }
-
-    @Bean
     public GroupedOpenApi groupController() {
         return GroupedOpenApi.builder()
                 .group("home")
