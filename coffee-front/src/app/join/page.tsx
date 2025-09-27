@@ -48,21 +48,13 @@ export default function SignupPage() {
             return;
         }
 
-        const normalized = role.trim();
-        if (normalized !== "관리자" && normalized !== "일반회원") {
-            setError("역할은 '관리자' 또는 '일반회원'만 선택 가능합니다.");
-            return;
-        }
-        const roleNum = normalized === "관리자" ? 1 : 0;
-
-        console.log(roleNum);
         setLoading(true);
         try {
             const res = await fetch(`${API}/customer/join`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ email, password, username, address, postalCode, role: roleNum }),
+                body: JSON.stringify({ email, password, username, address, postalCode }),
             });
 
             const data = await safeJson(res);
@@ -106,21 +98,6 @@ export default function SignupPage() {
                                onChange={(e) => setUsername(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
                                placeholder="별명 또는 이름" required/>
-                    </div>
-
-                    <div>
-                        <label htmlFor="role" className="block text-sm font-medium mb-1 text-gray-700">역할</label>
-                        <select
-                            id="role"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                            required
-                            className="w-full rounded-xl border px-3 py-2 bg-white text-gray-900 outline-none focus:ring-2 focus:ring-black/10"
-                        >
-                        <option value="">선택하세요</option>
-                            <option value="일반회원">일반회원</option>
-                            <option value="관리자">관리자</option>
-                        </select>
                     </div>
 
                     <div>

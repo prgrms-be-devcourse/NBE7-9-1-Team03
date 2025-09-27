@@ -27,10 +27,5 @@ public record CustomerCommonReqBody(
 
         @NotBlank
         @Pattern(regexp = "\\d{5}", message = "우편번호는 5자리 숫자여야 합니다.")
-        String postalCode,
-
-        @NotNull
-        @Min(0)
-        @Max(1)
-        Integer role
+        String postalCode
 ) {}

@@ -31,13 +31,12 @@ public class Customer{
     @Column(nullable = false)
     private int role = 0; // 0 = USER, 1 = ADMIN
 
-    public Customer(String email, String password, String username, String address, Integer postalCode, int role) {
+    public Customer(String email, String password, String username, String address, Integer postalCode) {
         this.email = email;
         this.password = password;
         this.username = username;
         this.address = address;
         this.postalCode = postalCode;
-        this.role = role;
     }
 
     public void updateInfo(String username, String address, Integer postalCode) {

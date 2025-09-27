@@ -36,14 +36,14 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer join(String email, String rawpassword, String username, String address, Integer postalCode, int role) {
+    public Customer join(String email, String rawpassword, String username, String address, Integer postalCode) {
         findByEmail(email).ifPresent(customer1 -> {
             throw new ServiceException("401", "이미 사용중인 이메일입니다");
         });
 
         String encodedPassword = passwordEncoder.encode(rawpassword);
 
-        Customer customer = new Customer(email, encodedPassword, username, address, postalCode, role);
+        Customer customer = new Customer(email, encodedPassword, username, address, postalCode);
         customer.updateRefreshToken(authService.genRefreshToken(customer));     // refresh토큰 설정
 
         return customerRepository.save(customer);

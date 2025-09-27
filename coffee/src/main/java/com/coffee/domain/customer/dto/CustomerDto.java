@@ -9,16 +9,14 @@ public record CustomerDto(
         String email,
         String username,
         String address,
-        Integer postalCode,
-        Integer role
+        Integer postalCode
 ) {
     public CustomerDto(Customer customer){
         this(
                 customer.getEmail(),
                 customer.getUsername(),
                 customer.getAddress(),
-                customer.getPostalCode(),
-                customer.getRole()
+                customer.getPostalCode()
         );
     }
 
@@ -27,8 +25,7 @@ public record CustomerDto(
                 .email(customer.getEmail())
                 .username(customer.getUsername())
                 .address(customer.getAddress())
-                .postalCode(customer.getPostalCode())
-                .role(customer.getRole());
+                .postalCode(customer.getPostalCode());
 
         return builder.build();
     }
@@ -39,7 +36,6 @@ public record CustomerDto(
                 .username(this.username)
                 .address(this.address)
                 .postalCode(this.postalCode)
-                .role(this.role)
                 .build();
     }
 }

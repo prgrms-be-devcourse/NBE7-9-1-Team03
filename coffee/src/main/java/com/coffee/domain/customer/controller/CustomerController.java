@@ -47,7 +47,7 @@ public class CustomerController {
     ) {
         Customer customer = customerService
                 .join(reqBody.email(), reqBody.password(), reqBody.username(),
-                        reqBody.address(), Integer.parseInt(reqBody.postalCode()), reqBody.role());
+                        reqBody.address(), Integer.parseInt(reqBody.postalCode()));
 
         return new RsData(
                 "201",
