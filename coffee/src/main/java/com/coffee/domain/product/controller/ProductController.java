@@ -1,9 +1,10 @@
 package com.coffee.domain.product.controller;
 
-import com.coffee.global.rsData.RsData;
 import com.coffee.domain.product.dto.ProductDto;
 import com.coffee.domain.product.entity.Product;
 import com.coffee.domain.product.service.ProductService;
+import com.coffee.global.rq.Rq;
+import com.coffee.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final Rq rq;
 
     // 1) 전체 조회
     @GetMapping
@@ -57,6 +59,8 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 생성")
     public RsData<ProductWriteResBody> createItem(@RequestBody @Valid ProductWriteReqBody req) {
+        rq.validateAdminActor();    // 관리자 권한 체크
+
         Product p = productService.create(req.name(), req.price(), req.stock(), req.imageUrl());
         return new RsData<>(
                 "201-1",
@@ -78,6 +82,8 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 수정")
     public RsData<Void> modifyItem(@PathVariable Long id, @RequestBody @Valid ProductModifyReqBody req) {
+        rq.validateAdminActor();    // 관리자 권한 체크
+
         Product p = productService.findById(id).get();
         productService.modify(p, req.name(), req.price(), req.stock(), req.imageUrl());
         return new RsData<>("200-1", "%d번 상품이 수정되었습니다.".formatted(id));
@@ -88,6 +94,8 @@ public class ProductController {
     @Transactional
     @Operation(summary = "상품 삭제")
     public RsData<Void> deleteItem(@PathVariable Long id) {
+        rq.validateAdminActor();    // 관리자 권한 체크
+
         Product p = productService.findById(id).get();
         productService.delete(p);
         return new RsData<>("200-1", "%d번 상품이 삭제되었습니다.".formatted(id));

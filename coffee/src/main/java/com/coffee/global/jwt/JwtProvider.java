@@ -58,7 +58,8 @@ public class JwtProvider {
         Map<String, Object> body = Map.of(
                 "email", customer.getEmail(),
                 "username", customer.getUsername(),
-                "address", customer.getAddress()
+                "address", customer.getAddress(),
+                "role", customer.getRole()
         );
 
         ClaimsBuilder claimsBuilder = Jwts.claims();
