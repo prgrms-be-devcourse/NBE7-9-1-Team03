@@ -21,7 +21,7 @@ public class Customer{
     @Column( nullable = false)
     private String password;    // 비밀번호
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", length = 512)
     private String refreshToken;
 
     private String username;    // 이름
