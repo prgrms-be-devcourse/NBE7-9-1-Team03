@@ -15,6 +15,7 @@ export default function SignupPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
+    const [role, setRole] = useState("");
     const [address, setAddress] = useState("");
     const [postalCode, setPostalCode] = useState("");
 
@@ -46,13 +47,22 @@ export default function SignupPage() {
             setError("우편번호는 숫자 5자리여야 합니다.");
             return;
         }
+
+        const normalized = role.trim();
+        if (normalized !== "관리자" && normalized !== "일반회원") {
+            setError("역할은 '관리자' 또는 '일반회원'만 선택 가능합니다.");
+            return;
+        }
+        const roleNum = normalized === "관리자" ? 1 : 0;
+
+        console.log(roleNum);
         setLoading(true);
         try {
             const res = await fetch(`${API}/customer/join`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                body: JSON.stringify({ email, password, username, address, postalCode }),
+                body: JSON.stringify({ email, password, username, address, postalCode, role: roleNum }),
             });
 
             const data = await safeJson(res);
@@ -86,15 +96,31 @@ export default function SignupPage() {
                         <input id="email" type="text" value={email}
                                onChange={(e) => setEmail(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="you@example.com" required autoComplete="email" />
+                               placeholder="you@example.com" required autoComplete="email"/>
                     </div>
 
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">사용자 이름</label>
+                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">사용자
+                            이름</label>
                         <input id="username" type="text" value={username}
                                onChange={(e) => setUsername(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="별명 또는 이름" required />
+                               placeholder="별명 또는 이름" required/>
+                    </div>
+
+                    <div>
+                        <label htmlFor="role" className="block text-sm font-medium mb-1 text-gray-700">역할</label>
+                        <select
+                            id="role"
+                            value={role}
+                            onChange={(e) => setRole(e.target.value)}
+                            required
+                            className="w-full rounded-xl border px-3 py-2 bg-white text-gray-900 outline-none focus:ring-2 focus:ring-black/10"
+                        >
+                        <option value="">선택하세요</option>
+                            <option value="일반회원">일반회원</option>
+                            <option value="관리자">관리자</option>
+                        </select>
                     </div>
 
                     <div>
@@ -102,7 +128,7 @@ export default function SignupPage() {
                         <input id="password" type="password" value={password}
                                onChange={(e) => setPassword(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="8자 이상" required autoComplete="new-password" />
+                               placeholder="8자 이상" required autoComplete="new-password"/>
                     </div>
 
                     <div>
@@ -110,15 +136,16 @@ export default function SignupPage() {
                         <input id="address" type="text" value={address}
                                onChange={(e) => setAddress(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="거주지 주소" required />
+                               placeholder="거주지 주소" required/>
                     </div>
 
                     <div>
-                        <label htmlFor="postalCode" className="block text-sm font-medium mb-1 text-gray-700">우편번호</label>
+                        <label htmlFor="postalCode"
+                               className="block text-sm font-medium mb-1 text-gray-700">우편번호</label>
                         <input id="postalCode" type="text" value={postalCode}
                                onChange={(e) => setPostalCode(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="우편번호" required />
+                               placeholder="우편번호" required/>
                     </div>
 
                     <button type="submit" disabled={loading}
