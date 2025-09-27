@@ -28,6 +28,9 @@ public class Customer{
     private String address;     // 주소
     private Integer postalCode;  // 우편번호
 
+    @Column(nullable = false)
+    private int role = 0; // 0 = USER, 1 = ADMIN
+
     public Customer(String email, String password, String username, String address, Integer postalCode) {
         this.email = email;
         this.password = password;
@@ -51,11 +54,6 @@ public class Customer{
 }
 
 /*
-User 유저
-회원정보 id PK INT
-이메일 email UNIQUE KEY varchar
-유저명 username notnull varchar
-주소 addr notnull varchar
-우편번호 postalCode notnull varchar
-어드민 isadmin notnull boolean -> 추후 구현
+관리자 권한 업데이트 > 일반유저와 동일하게 회원가입, 권한만 업데이트
+UPDATE customer SET role = 1 WHERE email = 'admin@coffee.com';
  */

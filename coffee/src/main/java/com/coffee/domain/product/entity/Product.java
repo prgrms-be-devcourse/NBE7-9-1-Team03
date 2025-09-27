@@ -1,6 +1,5 @@
 package com.coffee.domain.product.entity;
 
-import com.coffee.domain.product.dto.ProductDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +24,7 @@ public class Product {
     @Column(nullable = false)
     private int stock;
 
-    @Column(nullable = true, length = 255)
+    @Column(name = "image_url", nullable = true, length = 255)
     private String imageUrl;
 
 
