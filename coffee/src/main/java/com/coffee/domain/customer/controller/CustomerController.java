@@ -45,7 +45,6 @@ public class CustomerController {
     public RsData<CustomerDto> join(
             @RequestBody @Valid CustomerCommonReqBody reqBody
     ) {
-
         Customer customer = customerService
                 .join(reqBody.email(), reqBody.password(), reqBody.username(),
                         reqBody.address(), Integer.parseInt(reqBody.postalCode()));

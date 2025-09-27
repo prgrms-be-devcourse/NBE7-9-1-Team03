@@ -1,8 +1,7 @@
+// 변경사항 원복
 package com.coffee.domain.customer.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 public record CustomerCommonReqBody(
         @NotBlank

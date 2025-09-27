@@ -15,6 +15,7 @@ export default function SignupPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [username, setUsername] = useState("");
+    const [role, setRole] = useState("");
     const [address, setAddress] = useState("");
     const [postalCode, setPostalCode] = useState("");
 
@@ -46,6 +47,7 @@ export default function SignupPage() {
             setError("우편번호는 숫자 5자리여야 합니다.");
             return;
         }
+
         setLoading(true);
         try {
             const res = await fetch(`${API}/customer/join`, {
@@ -86,15 +88,16 @@ export default function SignupPage() {
                         <input id="email" type="text" value={email}
                                onChange={(e) => setEmail(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="you@example.com" required autoComplete="email" />
+                               placeholder="you@example.com" required autoComplete="email"/>
                     </div>
 
                     <div>
-                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">사용자 이름</label>
+                        <label htmlFor="username" className="block text-sm font-medium mb-1 text-gray-700">사용자
+                            이름</label>
                         <input id="username" type="text" value={username}
                                onChange={(e) => setUsername(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="별명 또는 이름" required />
+                               placeholder="별명 또는 이름" required/>
                     </div>
 
                     <div>
@@ -102,7 +105,7 @@ export default function SignupPage() {
                         <input id="password" type="password" value={password}
                                onChange={(e) => setPassword(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="8자 이상" required autoComplete="new-password" />
+                               placeholder="8자 이상" required autoComplete="new-password"/>
                     </div>
 
                     <div>
@@ -110,15 +113,16 @@ export default function SignupPage() {
                         <input id="address" type="text" value={address}
                                onChange={(e) => setAddress(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="거주지 주소" required />
+                               placeholder="거주지 주소" required/>
                     </div>
 
                     <div>
-                        <label htmlFor="postalCode" className="block text-sm font-medium mb-1 text-gray-700">우편번호</label>
+                        <label htmlFor="postalCode"
+                               className="block text-sm font-medium mb-1 text-gray-700">우편번호</label>
                         <input id="postalCode" type="text" value={postalCode}
                                onChange={(e) => setPostalCode(e.target.value)}
                                className="w-full rounded-xl border px-3 py-2 outline-none focus:ring-2 focus:ring-black/10 bg-white text-gray-900 placeholder:text-gray-400"
-                               placeholder="우편번호" required />
+                               placeholder="우편번호" required/>
                     </div>
 
                     <button type="submit" disabled={loading}
