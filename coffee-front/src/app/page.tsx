@@ -20,7 +20,7 @@ export default function Home() {
 
   // 1) 상품 목록 조회
   useEffect(() => {
-    fetchApi<ProductDto[]>(`/products`)
+    fetchApi<ProductDto[]>(`/api/products`)
       .then(setProducts)
       .catch((e) => {
         setListError(e.message || "상품 목록 조회 실패");
@@ -104,7 +104,7 @@ export default function Home() {
     try {
       type OrderResponse = { msg: string };
 
-      const data = await fetchApi<OrderResponse>(`/orders`, {
+      const data = await fetchApi<OrderResponse>(`/api/orders`, {
         method: "POST",
         body: JSON.stringify(body),
       });

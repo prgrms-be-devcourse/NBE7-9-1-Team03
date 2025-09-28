@@ -45,7 +45,7 @@ export default function ProductEditPage() {
         <input className="border rounded p-2" name="name" placeholder="상품명" value={form.name} onChange={onChange}/>
         <input className="border rounded p-2" name="price" placeholder="가격" value={form.price} onChange={onChange}/>
         <input className="border rounded p-2" name="stock"  placeholder="재고" value={form.stock} onChange={onChange}/>
-        <input className="border rounded p-2" name="imageURL" placeholder="이미지 URL(선택)" value={form.imageUrl ?? ""} onChange={onChange}/>
+        <input className="border rounded p-2" name="imageUrl" placeholder="이미지 URL(선택)" value={form.imageUrl ?? ""} onChange={onChange}/>
         <div className="flex gap-2">
           <button className="bg-blue-600 text-white rounded px-4 py-2">저장</button>
           <button type="button" className="border rounded px-4 py-2" onClick={() => router.back()}>취소</button>

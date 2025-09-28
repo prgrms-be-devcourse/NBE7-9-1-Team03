@@ -3,14 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/client";
-import type { ProductDto } from "@/type/product";
+import type { ProductDto, FormState } from "@/type/product";
 
-type FormState = {
-  name: string;
-  price: string;     // <-- 문자열
-  stock: string;     // <-- 문자열
-  imageURL: string;
-};
 
 export default function ProductNewPage() {
   const router = useRouter();
@@ -19,7 +13,7 @@ export default function ProductNewPage() {
     name: "",
     price: "",     
     stock: "",       
-    imageURL: "",
+    imageUrl: "",
   });
 
   // 공통 텍스트 입력
@@ -64,7 +58,7 @@ export default function ProductNewPage() {
       name: form.name.trim(),
       price: priceNum,
       stock: stockNum,
-      imageURL: form.imageURL.trim() || undefined,
+      imageUrl: form.imageUrl.trim() ? form.imageUrl.trim() : undefined,
     };
 
     try {
@@ -126,16 +120,19 @@ export default function ProductNewPage() {
         {/* 이미지 URL (일반 텍스트) */}
         <input
           className="border rounded p-2"
-          name="imageURL"
+          name="imageUrl"
           type="text"
           placeholder="이미지 URL (선택)"
-          value={form.imageURL}
+          value={form.imageUrl}
           onChange={onChangeText}
           maxLength={500}
         />
 
         <button className="bg-blue-600 text-white rounded px-4 py-2">
           저장
+        </button>
+        <button type="button" className="bg-gray-400 text-white rounded px-4 py-2" onClick={() => router.back()}>
+          취소
         </button>
       </form>
     </main>
