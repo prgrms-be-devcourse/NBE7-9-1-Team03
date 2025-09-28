@@ -23,6 +23,10 @@ export default function LoginPage() {
             return;
         }
 
+        if(password.length < 8) {
+            setError("비밀번호는 8자 이상입니다");
+            return;
+        }
         setLoading(true);
         try {
             const res = await fetch(`${API}/customer/login`, {
@@ -76,7 +80,6 @@ export default function LoginPage() {
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="비밀번호"
                             required
-                            minLength={8}
                             className="border rounded px-3 py-2"
                         />
                     </label>
