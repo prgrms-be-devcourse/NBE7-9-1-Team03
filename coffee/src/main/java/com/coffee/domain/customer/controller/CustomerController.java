@@ -160,6 +160,35 @@ public class CustomerController {
         );
     }
 
+    public record AddressModifyReq(
+            @NotBlank String email,
+            @NotBlank @Pattern(regexp="\\d{5}") String postalCode,
+            @NotBlank @Pattern(regexp="^[가-힣a-zA-Z0-9\\s\\-]{5,100}$") String address
+    ) {}
+
+    @PutMapping("/address")
+    @Operation(summary = "회원 개인정보 변경")
+
+    public RsData<Void> modifyAddress(
+            @RequestBody @Valid AddressModifyReq reqBody
+    ) {
+        Customer actor = customerService.findByEmail(rq.getActor().getEmail()).get();
+
+        // 로그인 중인 이메일 일치 체크
+        if (!actor.getEmail().equals(reqBody.email())) {
+            throw new ServiceException("401", "로그인한 이메일과 다릅니다");
+        }
+        customerService.modifyAddress(actor, reqBody.address(), Integer.parseInt(reqBody.postalCode()));
+        String accessToken =  authService.genAccessToken(actor);
+        rq.setCookie("accessToken", accessToken);
+
+
+        return new RsData(
+                "200",
+                "내 정보 수정 성공"
+        );
+    }
+
 
     /*
         탈퇴:

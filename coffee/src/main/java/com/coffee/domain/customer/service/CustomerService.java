@@ -120,4 +120,9 @@ public class CustomerService {
         }
         log.info("Deleted {} customer(s) from the DB", deletedCount);
     }
+
+    @Transactional
+    public void modifyAddress(Customer customer, String address, Integer postalCode) {
+        customer.updateAddress(address, postalCode);
+    }
 }
