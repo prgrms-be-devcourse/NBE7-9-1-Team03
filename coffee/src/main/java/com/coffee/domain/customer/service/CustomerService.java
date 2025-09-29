@@ -59,6 +59,11 @@ public class CustomerService {
         Customer customer = findByEmail(email).orElseThrow(
                 () -> new ServiceException("401", "존재하지 않는 아이디 입니다.")
         );
+
+        if(customer.isDeleted()){
+            throw new ServiceException("401", "탈퇴한 계정입니다.");
+        }
+
         checkPassword(password, customer.getPassword());
 
         customer.updateRefreshToken(authService.genRefreshToken(customer));
