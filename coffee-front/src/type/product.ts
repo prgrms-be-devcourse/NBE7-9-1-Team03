@@ -2,6 +2,7 @@ export type ProductDto = {
     id: number;
     name: string;
     price: number;
+    stock: number;
     imageUrl?: string;
   };
   
@@ -12,3 +13,23 @@ export type ProductDto = {
     quantity: number;
   };
   
+  export type CreateProductDto = {
+    name: string;
+    price: number;
+    stock: number;
+    imageUrl?: string;
+  }
+
+  export type UpdateProductDto = {
+    name: string;
+    price: number;
+    stock: number;
+    imageUrl?: string;
+  }
+
+  export type FormState = {
+    name: string;
+    price: string;
+    stock: string;
+    imageUrl: string;
+  }

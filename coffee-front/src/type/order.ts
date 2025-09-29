@@ -1,5 +1,3 @@
-import type { CartItem } from "./product";
-
 // 단일 주문 처리
 export type SingleOrder = {
   customerEmail: string;
