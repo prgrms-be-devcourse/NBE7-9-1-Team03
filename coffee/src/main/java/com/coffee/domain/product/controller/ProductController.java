@@ -49,7 +49,7 @@ public class ProductController {
             @NotBlank @Size(min=2, max=50) String name,
             @Min(0) int price,
             @Min(0) int stock,
-            @NotBlank String imageUrl
+            String imageUrl
     ) {}
 
     public record ProductWriteResBody(ProductDto productDto) {}
@@ -74,7 +74,7 @@ public class ProductController {
             @NotBlank @Size(min=2, max=50) String name,
             @Min(0) int price,
             @Min(0) int stock,
-            @NotBlank String imageUrl
+            String imageUrl
     ) {}
 
     // 4) 수정
