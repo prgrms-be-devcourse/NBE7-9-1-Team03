@@ -38,11 +38,6 @@
 - Language: TypeScript
 - Styling: Tailwind CSS 4.0
 
-### DevOps & Tools
-- CI/CD: GitHub Actions
-- API Generation: swagger-typescript-api
-- Development: Docker (Redis)
-
 ## 커밋 컨벤션
 - feat: 새로운 기능 추가
 - refactor: 코드 리팩토링(기능 변화 없음)
@@ -53,3 +48,4 @@
 
 ## ERD
 [![ERD.png](https://i.postimg.cc/MTrqNJnr/ERD.png)](https://postimg.cc/DJs94Ddq)
+
