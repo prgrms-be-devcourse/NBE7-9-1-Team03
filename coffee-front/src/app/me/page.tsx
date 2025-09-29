@@ -105,6 +105,12 @@ export default function MyPage() {
               >
                 회원탈퇴
               </button>
+              <button
+                  className="mt-4 px-4 py-2 bg-gray-800 text-white rounded"
+                  onClick={() => router.push("/home")}
+              >
+                뒤로가기
+              </button>
             </div>
           </>
       ) : (

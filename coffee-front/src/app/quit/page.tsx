@@ -108,7 +108,7 @@ export default function QuitPage() {
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-500">
-                    취소하시겠어요? <a className="underline" href="/">메인화면으로</a>
+                    취소하시겠어요? <a className="underline" href="/home">메인화면으로</a>
                 </p>
             </div>
         </div>
