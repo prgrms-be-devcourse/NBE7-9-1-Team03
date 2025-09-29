@@ -20,4 +20,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findAllByCustomerEmail(String customerEmail);
 
     void deleteByCustomerEmail(String customerEmail);
+
+    long countByCustomerEmail(String email);
 }

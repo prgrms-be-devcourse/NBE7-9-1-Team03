@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +20,7 @@ public class Customer{
     @Column(unique=true)
     private String email;       // 사용자 이메일(아이디로 사용)
 
-    @Column( nullable = false)
+    @Column(nullable = false)
     private String password;    // 비밀번호
 
     @Column(name = "refresh_token", length = 512)
@@ -30,6 +32,11 @@ public class Customer{
 
     @Column(nullable = false)
     private int role = 0; // 0 = USER, 1 = ADMIN
+
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    private LocalDateTime deletedAt;
 
     public Customer(String email, String password, String username, String address, Integer postalCode) {
         this.email = email;
@@ -48,8 +55,14 @@ public class Customer{
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
+
     public void clearRefreshToken() {
         this.refreshToken = null;
+    }
+
+    public void markDeleted() {
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
     }
 }
 
