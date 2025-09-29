@@ -3,15 +3,19 @@ package com.coffee.domain.customer.service;
 
 import com.coffee.domain.customer.entity.Customer;
 import com.coffee.domain.customer.repository.CustomerRepository;
+import com.coffee.domain.order.repository.OrderRepository;
 import com.coffee.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -19,7 +23,7 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
-
+    private final OrderRepository orderRepository;
 
     public long count() {
         return customerRepository.count();}
@@ -80,7 +84,24 @@ public class CustomerService {
     }
 
     @Transactional
-    public void quit(Customer actor) {
-        customerRepository.delete(actor);
+    public void quit(Customer customer) {
+        customer.markDeleted();
+    }
+    // 탈퇴 사용자(quit으로 deleted=true로 마크된 사용자)
+    // && 탈퇴상태가 threshold이상 경과된 사용자 삭제 로직
+    // soft delete: CusomterPurgeScheduler로 마크된 사용자 스케쥴링에 의해 일괄 삭제
+    @Transactional
+    public void purgeDeletedCustomers() {
+        LocalDateTime threshold = LocalDateTime.now().minusSeconds(15); // 테스트용: 삭제일이 15초 지난 사용자 삭제
+        List<Customer> targets = customerRepository.findPurgeTargets(threshold);
+
+        for (Customer customer : targets) {
+            long orderCount = orderRepository.countByCustomerEmail(customer.getEmail());
+            if(orderCount > 0) {
+                throw new ServiceException("401", "주문내역이 있는 고객입니다");
+            }
+            customerRepository.delete(customer);
+        }
+        log.info("Deleted {} customer(s) from the DB", targets.size());
     }
 }
