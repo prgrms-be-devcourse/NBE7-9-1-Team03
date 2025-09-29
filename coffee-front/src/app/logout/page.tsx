@@ -29,7 +29,7 @@ export default function LogoutPage() {
                             : `로그아웃 실패 (${res.status})`;
                     throw new Error(reason);
                 }
-
+                
                 setMsg(typeof body === "object" ? body?.msg || "로그아웃 되었습니다." : "로그아웃 되었습니다.");
                 setStatus("success");
 
@@ -50,7 +50,7 @@ export default function LogoutPage() {
                 {status === "success" && (
                     <>
                         <p className="mb-4 text-green-600">{msg || "로그아웃 되었습니다."}</p>
-                        <Link href="/login" className="underline">
+                        <Link href="/" className="underline">
                             로그인 페이지로 돌아가기
                         </Link>
                     </>
@@ -63,7 +63,7 @@ export default function LogoutPage() {
                             <button className="border px-3 py-2 rounded" onClick={() => location.reload()}>
                                 다시 시도
                             </button>
-                            <Link href="/login" className="underline">
+                            <Link href="/" className="underline">
                                 로그인 페이지로
                             </Link>
                         </div>

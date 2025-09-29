@@ -74,7 +74,8 @@ public class CustomerController {
     record LoginResBody(
             CustomerDto customerDto,
             String accessToken,
-            String refreshToken
+            String refreshToken,
+            int role
     ) {
     }
     @PostMapping("/login")
@@ -86,6 +87,7 @@ public class CustomerController {
 
         String accessToken =  authService.genAccessToken(customer);
         String refreshToken = customer.getRefreshToken();
+        int role = customer.getRole();
 
         rq.setCookie("accessToken", accessToken);
         rq.setCookie("refreshToken", refreshToken);
@@ -96,7 +98,8 @@ public class CustomerController {
                 new LoginResBody(
                         new CustomerDto(customer),
                         accessToken,
-                        refreshToken
+                        refreshToken,
+                        role
                 )
         );
     }

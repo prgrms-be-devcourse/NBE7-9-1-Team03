@@ -13,7 +13,7 @@ export default function QuitDonePage() {
 
                 <>
                     <p className = "mb-4 text-green-600">{msg || "회원 탈퇴가 완료되었습니다."}</p>
-                    <Link href="/login" className="underline">
+                    <Link href="/" className="underline">
                             로그인 페이지로 돌아가기
                     </Link>
                 </>
