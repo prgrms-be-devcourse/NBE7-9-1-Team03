@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -37,6 +38,7 @@ public class Customer{
     @Column(nullable = false)
     private boolean deleted = false;
 
+    @Setter
     private LocalDateTime deletedAt;
 
     public Customer(String email, String password, String username, String address, Integer postalCode) {
