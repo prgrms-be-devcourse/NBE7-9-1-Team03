@@ -59,7 +59,7 @@ public class OrderService {
     public LocalDateTime updateOrder(OrderDto dto) {
         Order order = orderRepository.findById(dto.getOrderId())
                 .orElseThrow(() -> new NoSuchElementException("주문을 찾을 수 없습니다"));
-
+        int originalQuantity = order.getQuantity();
         if (dto.getQuantity() != null) {
             order.setQuantity(dto.getQuantity());
             order.setOrderDate(LocalDateTime.now());
@@ -72,8 +72,11 @@ public class OrderService {
         //재고 관리
         Product product = productRepository.findById(order.getProductId())
                 .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
-
-        product.decreaseStock(dto.getQuantity());
+        if(originalQuantity > dto.getQuantity()) {
+            product.increaseStock(originalQuantity - dto.getQuantity());
+        } else if(originalQuantity < dto.getQuantity()) {
+            product.decreaseStock(dto.getQuantity() - originalQuantity);
+        }
         //주문 수정이 일어난 경우 현재 시간을 주문 시간으로 설정하기 때문에 현재시각을 반환
         return LocalDateTime.now();
     }
@@ -88,7 +91,7 @@ public class OrderService {
         for (Order order : orders) {
             Product product = productRepository.findById(order.getProductId())
                     .orElseThrow(() -> new NoSuchElementException("상품을 찾을 수 없습니다."));
-            product.decreaseStock(order.getQuantity());
+            product.increaseStock(order.getQuantity());
         }
     }
 }
