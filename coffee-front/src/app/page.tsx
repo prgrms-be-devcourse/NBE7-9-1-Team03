@@ -59,6 +59,8 @@ useEffect(() =>{
 },[]);
 
 
+
+
   // 2) 장바구니 조회
   const loadCart = async () => {
     const email = form?.email;
@@ -277,7 +279,7 @@ useEffect(() =>{
   const saveCustomer = async () => {
     if (!form) return;
     try {
-      await fetchApi(`/api/deqhduiqddqedeqidhqiedhiqehdiqehdqehiu`, {
+      await fetchApi(`/api/customer/address`, {
         method: "PUT",
         body: JSON.stringify(form),
       });

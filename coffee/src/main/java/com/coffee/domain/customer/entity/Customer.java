@@ -3,6 +3,7 @@ package com.coffee.domain.customer.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,6 +53,10 @@ public class Customer{
         this.postalCode = postalCode;
     }
 
+    public void updateAddress(String address, Integer postalCode) {
+        this.address = address;
+        this.postalCode = postalCode;
+    }
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
