@@ -39,7 +39,12 @@ logging:
 
     com.rest1: DEBUG
 
+
+# 탈퇴고객 일괄수거 스케줄링 파라미터 설정
 custom:
-  jwt:
-    expireSeconds: "#{1000L * 60 * 60 * 24 * 365}"
-    secretPattern: abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890
+  customer:
+    scheduler:
+      cron: "0 * * * * ?"             # 매 1분마다 실행 (테스트용)
+      # cron: "0 0 3 * * ?"             # 새벽 3시 (운영용)
+      purge-threshold: 1         # 삭제 기준일: 1분 전 (테스트용)
+      # purge-threshold: 7         # 삭제 기준일: 7일 전 (운영용)

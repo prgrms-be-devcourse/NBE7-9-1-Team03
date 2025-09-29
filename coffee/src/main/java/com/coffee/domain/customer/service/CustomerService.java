@@ -7,6 +7,7 @@ import com.coffee.domain.order.repository.OrderRepository;
 import com.coffee.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,9 @@ public class CustomerService {
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
     private final OrderRepository orderRepository;
+
+    @Value("${custom.customer.scheduler.purge-threshold}")
+    private long purgeThreshold;
 
     public long count() {
         return customerRepository.count();}
@@ -92,12 +96,15 @@ public class CustomerService {
     public void quit(Customer customer) {
         customer.markDeleted();
     }
+
+    // TODO: 테스트 시연용으로 스케줄링 및 threshold값을 1분/1분으로 줄여 삭제 보여주기
     // 탈퇴 사용자(quit으로 deleted=true로 마크된 사용자)
     // && 탈퇴상태가 threshold이상 경과된 사용자 삭제 로직
     // soft delete: CusomterPurgeScheduler로 마크된 사용자 스케쥴링에 의해 일괄 삭제
     @Transactional
     public void purgeDeletedCustomers() {
-        LocalDateTime threshold = LocalDateTime.now().minusDays(7); // 삭제상태에서 7일 지난 사용자 삭제
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(purgeThreshold); // 테스트용: 1분단위 삭제
+        // LocalDateTime threshold = LocalDateTime.now().minusDays(purgeThreshold); // 삭제상태에서 7일 지난 사용자 삭제
         List<Customer> targets = customerRepository.findPurgeTargets(threshold);
 
         int deletedCount = 0;

@@ -3,6 +3,7 @@ package com.coffee.domain.customer.service;
 import com.coffee.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,10 @@ public class CustomerPurgeScheduler {
 
     private final CustomerService customerService;
 
-    @Scheduled(cron = "0 0 3 * * ?") // 매일 새벽 3시
+    @Value("${custom.customer.scheduler.cron}")
+    private String cron;
+
+    @Scheduled(cron = "${custom.customer.scheduler.cron}") // 매일 새벽 3시
     public void purge() {
         try {
             customerService.purgeDeletedCustomers();
@@ -22,5 +26,3 @@ public class CustomerPurgeScheduler {
         }
     }
 }
-
-// @Scheduled(cron = "*/10 * * * * ?") // 테스트 -> 10초마다
