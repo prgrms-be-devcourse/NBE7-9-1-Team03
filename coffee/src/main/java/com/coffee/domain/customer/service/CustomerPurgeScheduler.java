@@ -19,7 +19,7 @@ public class CustomerPurgeScheduler {
         try {
             customerService.purgeDeletedCustomers();
         } catch (ServiceException e) {
-            log.warn("삭제 실패: {}", e.getMessage());
+            log.warn("스케줄러: 삭제 실패: {}", e.getMessage());
         }
     }
 }

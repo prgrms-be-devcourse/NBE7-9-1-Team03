@@ -95,13 +95,24 @@ public class CustomerService {
         LocalDateTime threshold = LocalDateTime.now().minusSeconds(15); // 테스트용: 삭제일이 15초 지난 사용자 삭제
         List<Customer> targets = customerRepository.findPurgeTargets(threshold);
 
+        int deletedCount = 0;
+
         for (Customer customer : targets) {
-            long orderCount = orderRepository.countByCustomerEmail(customer.getEmail());
-            if(orderCount > 0) {
-                throw new ServiceException("401", "주문내역이 있는 고객입니다");
+            try {
+                long orderCount = orderRepository.countByCustomerEmail(customer.getEmail());
+
+                if (orderCount > 0) {
+                    log.warn("삭제 불가 - 주문 내역이 있는 고객: {}", customer.getEmail());
+                    continue; // 삭제 건너뜀
+                }
+
+                customerRepository.delete(customer);
+                deletedCount++;
+
+            } catch (Exception e) {
+                log.error("고객 {} 삭제 중 예외 발생: {}", customer.getEmail(), e.getMessage(), e);
             }
-            customerRepository.delete(customer);
         }
-        log.info("Deleted {} customer(s) from the DB", targets.size());
+        log.info("Deleted {} customer(s) from the DB", deletedCount);
     }
 }
