@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_API_BASE ?? "/api";
 
+import { useRouter } from "next/navigation";
+
 type CustomerDto = {
   email: string;
   username: string;
@@ -19,6 +21,7 @@ export default function MyPage() {
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState<CustomerDto | null>(null);
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   // GET /customer/me
   const load = async () => {
@@ -84,29 +87,37 @@ export default function MyPage() {
       <h1 className="text-2xl font-semibold mb-4">마이페이지</h1>
 
       {!editMode ? (
-        <>
-          <p><strong>이메일:</strong> {customer.email}</p>
-          <p><strong>이름:</strong> {customer.username}</p>
-          <p><strong>주소:</strong> {customer.address}</p>
-          <p><strong>우편번호:</strong> {customer.postalCode}</p>
-          <button
-            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded"
-            onClick={() => setEditMode(true)}
-          >
-            수정
-          </button>
-        </>
+          <>
+            <p><strong>이메일:</strong> {customer.email}</p>
+            <p><strong>이름:</strong> {customer.username}</p>
+            <p><strong>주소:</strong> {customer.address}</p>
+            <p><strong>우편번호:</strong> {customer.postalCode}</p>
+            <div className="flex items-center gap-2">
+              <button
+                  className="mt-4 px-4 py-2 bg-gray-800 text-white rounded"
+                  onClick={() => setEditMode(true)}
+              >
+                수정
+              </button>
+              <button
+                  className="mt-4 px-4 py-2 bg-gray-800 text-white rounded"
+                  onClick={() => router.push("/quit")}
+              >
+                회원탈퇴
+              </button>
+            </div>
+          </>
       ) : (
-        <div className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium">이메일 (변경 불가)</label>
-            <input
-              type="email"
-              value={form.email}
-              readOnly
-              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
-            />
-          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium">이메일 (변경 불가)</label>
+              <input
+                  type="email"
+                  value={form.email}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
+              />
+            </div>
           <div>
             <label className="block text-sm font-medium">비밀번호 (확인용)</label>
             <input
