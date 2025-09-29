@@ -68,8 +68,8 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public void checkPassword(String pass1, String pass2){
-        if (!passwordEncoder.matches(pass1, pass2)) {
+    public void checkPassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ServiceException("401", "비밀번호가 일치하지 않습니다");
         }
     }

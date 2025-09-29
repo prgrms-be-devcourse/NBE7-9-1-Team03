@@ -147,7 +147,7 @@ public class CustomerController {
         }
 
         // 로그인 중인 비밀번호와 일치 체크
-        customerService.checkPassword(actor.getPassword(), reqBody.password());
+        customerService.checkPassword(reqBody.password(), actor.getPassword());
 
         customerService.modifyMe(actor, reqBody.username(), reqBody.address(), Integer.parseInt(reqBody.postalCode()));
         String accessToken =  authService.genAccessToken(actor);
