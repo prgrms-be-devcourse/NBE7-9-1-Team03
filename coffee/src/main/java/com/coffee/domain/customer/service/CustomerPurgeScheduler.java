@@ -13,8 +13,7 @@ public class CustomerPurgeScheduler {
 
     private final CustomerService customerService;
 
-    //@Scheduled(cron = "0 0 3 * * ?") // 매일 새벽 3시
-    @Scheduled(cron = "*/10 * * * * ?") // 테스트 -> 10초마다
+    @Scheduled(cron = "0 0 3 * * ?") // 매일 새벽 3시
     public void purge() {
         try {
             customerService.purgeDeletedCustomers();
@@ -23,3 +22,5 @@ public class CustomerPurgeScheduler {
         }
     }
 }
+
+// @Scheduled(cron = "*/10 * * * * ?") // 테스트 -> 10초마다

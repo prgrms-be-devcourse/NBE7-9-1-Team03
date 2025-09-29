@@ -124,8 +124,6 @@ public class CustomerController {
     public RsData<CustomerDto> getUserByEmail() {
         Customer customer = customerService.findByEmail(rq.getActor().getEmail()).get();
 
-        // TODO: 로그인 안되있는 사용자가 페이지 접근하면 예외 던저주기
-
         return new RsData(
                 "200",
                 "내 정보 조회 성공",

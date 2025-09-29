@@ -97,7 +97,7 @@ public class CustomerService {
     // soft delete: CusomterPurgeScheduler로 마크된 사용자 스케쥴링에 의해 일괄 삭제
     @Transactional
     public void purgeDeletedCustomers() {
-        LocalDateTime threshold = LocalDateTime.now().minusSeconds(15); // 테스트용: 삭제일이 15초 지난 사용자 삭제
+        LocalDateTime threshold = LocalDateTime.now().minusDays(7); // 삭제상태에서 7일 지난 사용자 삭제
         List<Customer> targets = customerRepository.findPurgeTargets(threshold);
 
         int deletedCount = 0;
