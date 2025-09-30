@@ -16,7 +16,7 @@ export default function ProductListPage() {
     const role = parseInt(localStorage.getItem("role") || "0");
     if (role !== 1) {
       alert("관리자 권한이 필요합니다.");
-      router.back; // 일반 페이지로 이동
+      router.replace("/home"); // 일반 페이지로 이동
     }
   }, [router]);
 
@@ -44,6 +44,7 @@ export default function ProductListPage() {
         <button
           className="px-4 py-2 border rounded hover:bg-gray-50"
           onClick={() => {
+            localStorage.removeItem("role"); // 로그아웃 시 role 삭제
             router.push("/logout");
           }}
         >

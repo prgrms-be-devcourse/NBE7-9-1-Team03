@@ -17,7 +17,9 @@ export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   // 토스트 알림
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toasts, setToasts] = useState<
+  { id: number; message: string; type: "success" | "error" }[]
+>([]);
 
   // 사용자 정보
   const emailRef = useRef<HTMLInputElement>(null);
@@ -26,9 +28,12 @@ export default function Home() {
   const [editMode, setEditMode] = useState(false);
 
   // 토스트 표시 함수
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
+  const showToast = (message: string, type: "success" | "error" = "success") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
   };
 
   // 1) 상품 목록 조회
@@ -183,15 +188,13 @@ useEffect(() =>{
       return;
     }
 
-    if (!confirm("장바구니를 전체 비우시겠습니까?")) return;
-
     try {
       type CartClearResponse = {
         resultCode: string;
         msg: string;
       };
 
-      await fetchApi<CartClearResponse>(`/api/cart/clear`, {
+      const res = await fetchApi<CartClearResponse>(`/api/cart/clear`, {
         method: "DELETE",
         body: JSON.stringify({
           customerEmail: email,
@@ -199,7 +202,7 @@ useEffect(() =>{
       });
 
       setCart([]);
-      showToast("장바구니가 비워졌습니다.");
+      showToast(res.msg,"success");
     } catch (e: any) {
       showToast(e.message || "장바구니 비우기 실패", 'error');
     }
@@ -313,17 +316,18 @@ useEffect(() =>{
       </header>
 
       {/* 토스트 알림 */}
-      {toast && (
-        <div className="fixed top-4 right-4 z-50 animate-slide-in">
-          <div className={`px-6 py-3 rounded-lg shadow-lg ${
-            toast.type === 'success' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-red-500 text-white'
-          }`}>
-            {toast.message}
-          </div>
+      <div className="fixed top-4 right-4 z-50 space-y-2">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            className={`px-6 py-3 rounded-lg shadow-lg ${
+            toast.type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+            }`}
+          >
+          {toast.message}
         </div>
-      )}
+      ))}
+      </div>
 
       <div className="flex gap-6">
         {/* 왼쪽: 상품 목록 */}
